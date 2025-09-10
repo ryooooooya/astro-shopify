@@ -1,0 +1,37 @@
+---
+import CartIcon from "./CartIcon.svelte";
+
+export interface Props {
+  className?: string;
+  currentPage?: string;
+}
+const { className,currentPage } = Astro.props as Props;
+---
+
+<nav class={`${className} flex flex-col gap-y-8 text-[28px] leading-8`} >
+  <h1 class="">
+    <a href="/">SomeRoom</a>
+  </h1>
+  <ul class="flex flex-col gap-y-4">
+    <li>
+      <a href="/">Products</a>
+    </li>
+    <li>
+      <a href="/designers">Designers</a>
+    </li>
+    <li>
+      <a href="/series">Series</a>
+    </li>
+    <li>
+      <CartIcon client:load />
+    </li>
+  </ul>
+  <ul class="flex flex-col gap-y-4">
+    <li>
+      <a href="/about" class={`${currentPage == "about" && ("currentPage")}`}>About</a>
+    </li>
+    <li>
+      <a href="/">Contact</a>
+    </li>
+  </ul>
+</nav>

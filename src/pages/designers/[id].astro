@@ -1,0 +1,89 @@
+---
+import { getSeries, getSeriesDetail,getDesignerDetail,getDesigners, getProducts } from "../../utils/microcms";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProductCardByMicrocms from "../../components/ProductCardByMicrocms.astro";
+
+export async function getStaticPaths() {
+  const response = await getDesigners({ fields: ["id"] });
+  return response.contents.map((content: any) => ({
+    params: {
+      id: content.id,
+    },
+  }));
+}
+
+const title = "Astro + Shopify";
+const { id } = Astro.params;
+const designer = await getDesignerDetail(id as string);
+
+const series = await getSeries({
+  filters: `designers[contains]${id}`,
+  limit: 100
+});
+const products = await getProducts({
+  filters: `designers[contains]${id}`,
+  limit: 100
+});
+---
+
+<BaseLayout title={title}>
+  <div class="col-span-10 grid grid-cols-subgrid gap-10">
+    <div class="col-span-8">
+      <p class="text-xs">
+        Designer :
+      </p>
+      <h2 class="mt-3 text-2xl">
+        {designer.nameJa}
+      </h2>
+      <p class="mt-4 text-sm">
+        {designer.profile}
+      </p>
+      <div class="mt-2">
+        {designer.link.map((link: any) => (
+          <a href={`/designer/${link.url}`} class="block underline underline-offset-6 text-sm hover:no-underline">
+            {link.text}
+          </a>
+        ))}
+      </div>
+    </div>
+    <div class="col-span-2">
+      <img src={designer.image.url} alt={designer.nameJa} />
+    </div>
+  </div>
+  <div class="col-span-10 grid grid-cols-subgrid gap-10 mt-20">
+  {series.contents.map((content: any) => (
+    <div class="col-span-10 grid grid-cols-subgrid gap-10">
+      <div class="col-span-2">
+        <h3 class="text-2xl">{content.title}</h3>
+        <p class="mt-4 text-sm">
+          {content.text}
+        </p>
+        <a href={`/series/${content.id}`} class="block underline underline-offset-6 mt-4 text-sm hover:no-underline">
+          すべて見る
+        </a>
+      </div>
+      <div class="col-span-8 grid grid-cols-subgrid gap-10">
+        {products.contents.map((product: any) => (
+          <>
+            {product.series.map((ser: any) => (
+              ser.id === content.id && (
+                <ProductCardByMicrocms product={product} className="col-span-2"/>
+              )
+            ))}
+          </>
+        ))}
+      </div>
+    </div>
+  ))}
+  </div>
+  <div class="col-span-10 grid grid-cols-subgrid gap-x-10 mt-20">
+    <div class="col-span-10 mb-3">
+      <h3 class="text-xs">
+        Designer :
+      </h3>
+    </div>
+    {products.contents.map((product: any) => (
+      <ProductCardByMicrocms product={product} className="col-span-2"/>
+    ))}
+  </div>
+</BaseLayout>

@@ -1,0 +1,32 @@
+---
+import { getDesigners } from "../../utils/microcms";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const title = "Astro + Shopify";
+const designer = await getDesigners({
+  limit: 100
+});
+---
+
+<BaseLayout title={title} currentPage="designers">
+  <div class="col-span-10 grid grid-cols-subgrid gap-10">
+  {designer.contents.map((content: any) => (
+    <div class="col-span-10 grid grid-cols-subgrid gap-10">
+      <div class="col-span-2">
+        <div>
+          <img src={content.image.url} alt={content.nameJa} class="w-full"/>
+        </div>
+        <h3 class="mt-4 text-xl">{content.nameJa}</h3>
+        <p class="mt-2 text-sm">
+          {content.profile}
+        </p>
+        <div class="mt-2">
+          <a href={`/designers/${content.id}`} class="block underline underline-offset-6 mt-4 text-sm hover:no-underline">
+            すべて見る
+          </a>
+        </div>
+      </div>
+    </div>
+  ))}
+  </div>
+</BaseLayout>

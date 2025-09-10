@@ -1,0 +1,66 @@
+---
+import { z } from "zod";
+import { ProductResult } from "../../utils/schemas";
+import { getProducts } from "../../utils/shopify";
+import { setCache } from "../../utils/cache";
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProductCard from "../../components/ProductCard.astro";
+
+const ProductsResult = z.array(ProductResult);
+
+const title = "Astro + Shopify";
+const headers = Astro.request.headers;
+const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
+const products: z.infer<typeof ProductsResult> = await getProducts({ buyerIP: ip });
+
+setCache.short(Astro);
+---
+
+<BaseLayout title={title} currentPage="about">
+  <div class="grid grid-cols-subgrid col-span-10 items-end">
+    <div class="col-span-4 col-start-2">
+      <h1 class="text-3xl">
+        SomeRoom
+      </h1>
+      <p class="mt-4 text-xl">
+        SomeRoomはブランディング・広告・ウェブ・映像など、ビジュアルコミュニケーションを中心に、さまざまな領域でクライアントワークを行っているデザイナーが制作を行う作業部屋です。コロナ禍を経てひょんなことから始まった仕事場のシェアをきっかけに、制作物の販売などのイベントにグループで参加しています。
+      </p>
+      <dl class="grid grid-cols-[auto_1fr] gap-x-3 mt-4 text-xl">
+        <dd>
+          2025.05
+        </dd>
+        <dt>
+          OSAKA ART BOOK FAIR
+        </dt>
+        <dd>
+          2025.01
+        </dd>
+        <dt>
+          ZINEフェス 東京
+        </dt>
+        <dd>
+          2024.10
+        </dd>
+        <dt>
+          『Room801』@渋谷ヒカリエ 8 cube1,2,3
+        </dt>
+        <dd>
+          2024.03
+        </dd>
+        <dt>
+          文ッ字フリマ
+        </dt>
+        <dd>
+          2023.04
+        </dd>
+        <dt>
+          Featured Projects
+        </dt>
+      </dl>
+    </div>
+    <div class="col-span-5 h-full">
+      <img src="/img/about-img.webp" alt="" class="w-full h-full object-cover"/>
+    </div>
+  </div>
+</BaseLayout>

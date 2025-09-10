@@ -1,6 +1,6 @@
 ---
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
+import Navigation from "../components/Navigation.astro";
+// import Footer from "../components/Footer.astro";
 import CartDrawer from "../components/CartDrawer.svelte";
 
 import '@fontsource/red-hat-display';
@@ -9,12 +9,13 @@ import '@fontsource/noto-sans-jp';
 export interface Props {
   title: string;
   description?: string;
+  currentPage?: string
 }
 
 const defaultDesc =
   "A lightweight and minimalit Astro starter theme using Shopify with Svelte, Tailwind, and TypeScript.";
 
-const { title, description = defaultDesc } = Astro.props as Props;
+const { title, description = defaultDesc,currentPage } = Astro.props as Props;
 ---
 
 <html lang="en">
@@ -31,10 +32,11 @@ const { title, description = defaultDesc } = Astro.props as Props;
   </head>
   <body>
     <CartDrawer client:idle />
-    <Header />
-    <main>
-      <slot />
-    </main>
-    <Footer />
+    <div class="min-h-screen px-10 grid grid-cols-12 gap-x-10 py-8">
+      <Navigation className="col-span-2" currentPage={currentPage}/>
+      <main class="col-span-10 grid grid-cols-subgrid">
+        <slot />
+      </main>
+    </div>
   </body>
 </html>

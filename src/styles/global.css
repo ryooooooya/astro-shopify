@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "kiso.css";
+/* @import "kiso.css"; */
 
 @theme {
   --color-gray-500: #737373;
@@ -44,4 +44,15 @@
     @apply focus:ring-2 focus:ring-black focus:ring-offset-1 focus:outline-none;
     @apply disabled:cursor-not-allowed disabled:opacity-60;
   }
+}
+
+.currentPage{
+  @apply relative;
+}
+.currentPage::after{
+  content: "";
+  @apply absolute;
+  @apply top-[13px] -left-6;
+  @apply w-3 h-3 rounded-full;
+  @apply bg-black;
 }

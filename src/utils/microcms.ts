@@ -1,4 +1,3 @@
-// SDK利用準備
 import type { MicroCMSQueries, MicroCMSListContent } from "microcms-js-sdk";
 import { createClient } from "microcms-js-sdk";
 
@@ -8,7 +7,7 @@ const client = createClient({
 });
 
 // 型定義
-export type Designer = {
+export type Designers = {
   image: {
     url: string;
     height: number;
@@ -26,7 +25,7 @@ export type Designer = {
 export type Series = {
   title: string;
   text: string;
-  designers: Designer[];
+  designers: Designers[];
   coverImage: {
     url: string;
     height: number;
@@ -39,11 +38,12 @@ export type Series = {
   }[];
 } & MicroCMSListContent;
 
-export type Product = {
+export type Products = {
   name: string;
   size: string;
-  designer: Designer[];
+  designers: Designers[];
   series: Series[];
+  categories: Categories[];
   concept: string;
   material: string;
   design: string;
@@ -53,18 +53,63 @@ export type Product = {
   }[];
 } & MicroCMSListContent;
 
+export type Categories = {
+  name: string;
+} & MicroCMSListContent;
+
 
 // APIの呼び出し
 export const getProducts = async (queries?: MicroCMSQueries) => {
-  return await client.getList<Product>({ endpoint: "products", queries });
+  return await client.getList<Products>({ endpoint: "products", queries });
 };
-
 export const getProductDetail = async (
   contentId: string,
   queries?: MicroCMSQueries
 ) => {
-  return await client.getListDetail<Product>({
+  return await client.getListDetail<Products>({
     endpoint: "products",
+    contentId,
+    queries,
+  });
+};
+
+export const getCategories = async (queries?: MicroCMSQueries) => {
+  return await client.getList<Categories>({ endpoint: "products", queries });
+};
+export const getCategoryDetail = async (
+  contentId: string,
+  queries?: MicroCMSQueries
+) => {
+  return await client.getListDetail<Categories>({
+    endpoint: "categories",
+    contentId,
+    queries,
+  });
+};
+
+export const getSeries = async (queries?: MicroCMSQueries) => {
+  return await client.getList<Series>({ endpoint: "series", queries });
+};
+export const getSeriesDetail = async (
+  contentId: string,
+  queries?: MicroCMSQueries
+) => {
+  return await client.getListDetail<Series>({
+    endpoint: "series",
+    contentId,
+    queries,
+  });
+};
+
+export const getDesigners = async (queries?: MicroCMSQueries) => {
+  return await client.getList<Designers>({ endpoint: "designers", queries });
+};
+export const getDesignerDetail = async (
+  contentId: string,
+  queries?: MicroCMSQueries
+) => {
+  return await client.getListDetail<Designers>({
+    endpoint: "designers",
     contentId,
     queries,
   });

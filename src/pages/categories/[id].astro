@@ -1,0 +1,36 @@
+---
+import { getCategories, getCategoryDetail, getProducts } from "../../utils/microcms";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProductCardByMicrocms from "../../components/ProductCardByMicrocms.astro";
+
+export async function getStaticPaths() {
+  const response = await getCategories({ fields: ["id"] });
+  return response.contents.map((content: any) => ({
+    params: {
+      id: content.id,
+    },
+  }));
+}
+
+const title = "Astro + Shopify";
+const { id } = Astro.params;
+const cat = await getCategoryDetail(id as string);
+
+const products = await getProducts({
+  filters: `categories[contains]${id}`,
+  limit: 100
+});
+---
+
+<BaseLayout title={title}>
+  <div class="col-span-10">
+    <h2 class="text-2xl">
+      {cat.name}
+    </h2>
+  </div>
+  <div class="col-span-10 grid grid-cols-subgrid gap-10 mt-10">
+  {products.contents.map((product: any) => (
+    <ProductCardByMicrocms product={product} className="col-span-2"/>
+  ))}
+  </div>
+</BaseLayout>
