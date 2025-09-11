@@ -37,9 +37,9 @@
     @apply border-gray-200;
   }
   .button {
-    @apply flex items-center justify-center rounded-lg;
-    @apply bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-600;
-    @apply px-8 py-3 text-base font-medium text-white;
+    @apply flex items-center justify-center;
+    @apply bg-black;
+    @apply px-8 py-3 text-sm text-white;
     @apply transition hover:opacity-80;
     @apply focus:ring-2 focus:ring-black focus:ring-offset-1 focus:outline-none;
     @apply disabled:cursor-not-allowed disabled:opacity-60;
