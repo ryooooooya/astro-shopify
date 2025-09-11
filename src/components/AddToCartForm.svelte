@@ -36,7 +36,7 @@
 
   <button
     type="submit"
-    class="button mt-10 w-full"
+    class="button w-full"
     disabled={$isCartUpdating || noQuantityLeft || !variantAvailableForSale}
   >
     {#if $isCartUpdating}

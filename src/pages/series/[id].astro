@@ -23,30 +23,58 @@ const products = await getProducts({
 ---
 
 <BaseLayout title={title}>
-  <div class="col-span-10">
-    <p class="text-xs">
-      Series :
-    </p>
-    <h2 class="mt-3 text-2xl">
-      {series.title}
+  <section class="grid grid-cols-5 gap-10 items-end">
+    <div class="col-span-3">
+      <h2>
+        <span class="block text-xs">
+          Series :
+        </span>
+        <span class="block mt-3 text-2xl">
+          {series.title}
+        </span>
+      </h2>
+      <p class="mt-4 text-sm">
+        {series.text}
+      </p>
+      <div class="mt-12">
+        <h2 class="text-xs">
+          Designer
+        </h2>
+        <div class="mt-3">
+          {series.designers.map((designer: any) => (
+            <a href={`/designers/${designer.id}`} class="block text-2xl underline underline-offset-6 hover:no-underline">
+              {designer.nameJa}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+    <div class="col-span-2">
+      <img src={series.coverImage.url} alt={series.title} class="w-full"/>
+    </div>
+  </section>
+  <section class="mt-20">
+    <h2 class="text-xs">
+      Images :
     </h2>
-    <p class="mt-4 text-sm">
-      {series.text}
-    </p>
-    <div class="mt-12">
-      <h3 class="text-xs">Designer</h3>
-      <div class="mt-3">
-        {series.designers.map((designer: any) => (
-          <a href={`/designers/${designer.id}`} class="block text-2xl underline underline-offset-6 hover:no-underline">
-            {designer.nameJa}
-          </a>
+    <div class="mt-3 flex gap-10">
+      {series.otherImage.map((image: any) => (
+        <div>
+          <img src={image.url} class="w-full"/>
+        </div>
+      ))}
+    </div>
+  </section>
+  <section class="mt-33">
+    <h2 class="text-xs">
+      All products :
+    </h2>
+    <div class="grid grid-cols-5 gap-10 mt-3">
+      <div class="">
+        {products.contents.map((product: any) => (
+          <ProductCardByMicrocms product={product} className=""/>
         ))}
       </div>
     </div>
-  </div>
-  <div class="col-span-10 grid grid-cols-subgrid gap-10 mt-19">
-  {products.contents.map((product: any) => (
-    <ProductCardByMicrocms product={product} className="col-span-2"/>
-  ))}
-  </div>
+  </section>
 </BaseLayout>

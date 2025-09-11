@@ -9,10 +9,9 @@ const designer = await getDesigners({
 ---
 
 <BaseLayout title={title} currentPage="designers">
-  <div class="col-span-10 grid grid-cols-subgrid gap-10">
-  {designer.contents.map((content: any) => (
-    <div class="col-span-10 grid grid-cols-subgrid gap-10">
-      <div class="col-span-2">
+  <div class="grid grid-cols-5 gap-10 h-full">
+    {designer.contents.map((content: any) => (
+      <div class="">
         <div>
           <img src={content.image.url} alt={content.nameJa} class="w-full"/>
         </div>
@@ -26,7 +25,6 @@ const designer = await getDesigners({
           </a>
         </div>
       </div>
-    </div>
-  ))}
+    ))}
   </div>
 </BaseLayout>

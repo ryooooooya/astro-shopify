@@ -18,5 +18,7 @@ setCache.short(Astro);
 ---
 
 <BaseLayout title={title}>
-  {products.map((product) => <ProductCard product={product} className="col-span-2"/>)}
+  <div class="grid grid-cols-5 gap-10 h-full">
+    {products.map((product) => <ProductCard product={product} />)}
+  </div>
 </BaseLayout>
