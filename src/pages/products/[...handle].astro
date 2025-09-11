@@ -7,7 +7,8 @@ import NotFoundLayout from "../../layouts/NotFoundLayout.astro";
 
 import AddToCartForm from "../../components/AddToCartForm.svelte";
 import ProductImageGallery from "../../components/ProductImageGallery.astro";
-import ProductBreadcrumb from "../../components/ProductBreadcrumb.astro";
+import ProductCardByMicrocms from "../../components/ProductCardByMicrocms.astro";
+import Money from "../../components/Money.svelte";
 
 const { handle } = Astro.params;
 const headers = Astro.request.headers;
@@ -21,9 +22,17 @@ if (!product) {
 const firstVariant = product?.variants.nodes[0];
 setCache.short(Astro);
 
-
-import { getProductDetail } from "../../utils/microcms";
+import { getProductDetail, getProducts } from "../../utils/microcms";
 const productInfomation = await getProductDetail(handle as string);
+const products = await getProducts({
+  filters: `id[not_equals]${productInfomation.id}`,
+  limit: 100
+});
+const productsListCat = productInfomation.categories.map((category) => (
+  products.contents.filter((product: any) =>
+    product.categories.some((cat: any) => cat.id === category.id)
+  )
+));
 ---
 
 {
@@ -33,14 +42,20 @@ const productInfomation = await getProductDetail(handle as string);
   ) : (
     // 取得できたとき
     <BaseLayout title={product.title}>
-      <section class="container">
-        <div class="">
+      <section class="">
+        <div class="grid grid-cols-2 gap-10">
           <div class="">
             <ProductImageGallery images={product.images} />
           </div>
-          <div class="mt-8 lg:col-span-5 lg:mt-0">
-            <div set:html={productInfomation.material} />
-            <div>
+          <div class="pt-6">
+            <h1 class="text-2xl">
+              {productInfomation.name}
+            </h1>
+            <p class="mt-4 text-lg">
+              <Money price={product?.variants.nodes[0].price} />
+              <span class="text-xs"> （税込）</span>
+            </p>
+            <div class="max-w-[200px] mt-4">
               <AddToCartForm
                 client:load
                 variantId={firstVariant?.id}
@@ -48,9 +63,133 @@ const productInfomation = await getProductDetail(handle as string);
                 variantAvailableForSale={firstVariant?.availableForSale}
               />
             </div>
+            <dl class="grid grid-cols-[auto_1fr] gap-4 mt-10 ">
+              <dd class="text-gray-500">
+                Designer
+              </dd>
+              <dt>
+                {productInfomation.designers.map((designer) => (
+                  <a href={`/designers/${designer.id}`}>{designer.nameJa}</a>
+                ))}
+              </dt>
+              <dd class="text-gray-500">
+                Size
+              </dd>
+              <dt>
+                {productInfomation.size}
+              </dt>
+              <dd class="text-gray-500">
+                Series
+              </dd>
+              <dt>
+                {productInfomation.series.map((series) => (
+                  <a href={`/series/${series.id}`}>{series.title}</a>
+                ))}
+              </dt>
+            </dl>
+            <dl class="grid grid-cols-[auto_1fr] gap-4 mt-10 ">
+              <dd class="text-gray-500">
+                Concept
+              </dd>
+              <dt>
+                <div set:html={productInfomation.concept} />
+              </dt>
+              <dd class="text-gray-500">
+                Material
+              </dd>
+              <dt>
+                <div set:html={productInfomation.material} />
+              </dt>
+              <dd class="text-gray-500">
+                Design
+              </dd>
+              <dt>
+                <div set:html={productInfomation.design} />
+              </dt>
+              <dd class="text-gray-500">
+                Notes
+              </dd>
+              <dt>
+                {productInfomation.link.map((note) =>(
+                  <a href={note.url} target="_blank" rel="noopener noreferrer">{note.text}</a>
+                ))}
+              </dt>
+            </dl>
           </div>
         </div>
       </section>
+      {productInfomation.series.map((series) =>(
+        <section class="mt-24">
+          <p class="flex items-start gap-1">
+            <span class="text-xs">Series :</span>
+            <span class="text-2xl">{series.title}</span>
+          </p>
+          <div class="grid grid-cols-5 gap-10 mt-3">
+            {products.contents.map((product: any) => (
+              <>
+                {product.series.map((ser: any) => (
+                  ser.id === series.id && (
+                    <ProductCardByMicrocms product={product} className=""/>
+                  )
+                ))}
+              </>
+            ))}
+          </div>
+        </section>
+      ))}
+      {productInfomation.designers.map((designer) =>(
+        <section class="mt-24">
+          <p class="flex items-start gap-1">
+            <span class="text-xs">Designer :</span>
+            <span class="text-2xl">{designer.nameJa}</span>
+          </p>
+          <div class="grid grid-cols-5 gap-10 mt-3">
+            {products.contents.map((product: any) => (
+              <>
+                {product.designers.map((creator: any) => (
+                  creator.id === designer.id && (
+                    <ProductCardByMicrocms product={product} className=""/>
+                  )
+                ))}
+              </>
+            ))}
+          </div>
+        </section>
+      ))}
+      {/* {productInfomation.categories.map((category) =>(
+        <section class="mt-24">
+          <p class="flex items-start gap-1">
+            <span class="text-xs">Category :</span>
+            <span class="text-2xl">{category.name}</span>
+          </p>
+          <div class="grid grid-cols-5 gap-10 mt-3">
+            {products.contents.map((product: any) => (
+              <>
+                {product.categories.map((cat: any) => (
+                  cat.id === category.id && (
+                    <ProductCardByMicrocms product={product} className=""/>
+                  )
+                ))}
+              </iv>
+            ))}
+          </div>
+        </section>
+      ))} */}
+      {productsListCat.map((productsCat) => (
+        productsCat.length > 0 && (
+          <section class="mt-24">
+            <p class="flex items-start gap-1">
+              <span class="text-xs">Category :</span>
+              <span class="text-2xl">{productsCat[0].categories.find((cat: any) => cat.id)!.name}</span>
+            </p>
+            <div class="grid grid-cols-5 gap-10 mt-3">
+              {productsCat.map((product: any) => (
+                <ProductCardByMicrocms product={product} className=""/>
+              ))}
+            </div>
+          </section>
+        )
+      ))}
     </BaseLayout>
   )
 }
