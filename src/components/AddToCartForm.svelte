@@ -62,9 +62,9 @@
       </svg>
     {/if}
     {#if variantAvailableForSale}
-      Add to bag
+      カートに入れる
     {:else}
-      Sold out
+      売り切れ
     {/if}
   </button>
   {#if noQuantityLeft}
