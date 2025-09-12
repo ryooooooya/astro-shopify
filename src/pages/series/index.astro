@@ -13,12 +13,7 @@ const products = await getProducts({
 });
 ---
 
-<BaseLayout title={title}>
-  <!-- <div class="col-span-10">
-    <h2 class="text-2xl">
-      シリーズ
-    </h2>
-  </div> -->
+<BaseLayout title={title} currentPage="series">
   <div class="h-full">
     {series.contents.map((content: any) => (
       <div class="grid grid-cols-5 gap-x-10 gap-y-16 mb-20">

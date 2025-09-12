@@ -46,13 +46,15 @@
   }
 }
 
+[x-cloak] { display: none !important; }
+
 .currentPage{
   @apply relative;
 }
 .currentPage::after{
   content: "";
   @apply absolute;
-  @apply top-[13px] -left-6;
+  @apply top-[10px] -left-6;
   @apply w-3 h-3 rounded-full;
   @apply bg-black;
 }
