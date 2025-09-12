@@ -1,4 +1,6 @@
 ---
+import { getCategories } from "../utils/microcms";
+
 import Navigation from "../components/Navigation.astro";
 // import Footer from "../components/Footer.astro";
 import CartDrawer from "../components/CartDrawer.svelte";
@@ -12,10 +14,13 @@ export interface Props {
   currentPage?: string
 }
 
-const defaultDesc =
-  "A lightweight and minimalit Astro starter theme using Shopify with Svelte, Tailwind, and TypeScript.";
+const defaultDesc ="A lightweight and minimalit Astro starter theme using Shopify with Svelte, Tailwind, and TypeScript.";
 
-const { title, description = defaultDesc,currentPage } = Astro.props as Props;
+const categories = await getCategories({
+  limit: 100
+});
+
+const { title, description = defaultDesc, currentPage } = Astro.props as Props;
 ---
 
 <html lang="en">
@@ -33,7 +38,7 @@ const { title, description = defaultDesc,currentPage } = Astro.props as Props;
   <body>
     <CartDrawer client:idle />
     <div class="min-h-screen px-10 grid grid-cols-12 gap-x-10 py-8">
-      <Navigation className="col-span-2" currentPage={currentPage}/>
+      <Navigation className="col-span-2" currentPage={currentPage} categories={categories.contents} />
       <main class="col-span-10 pb-20">
         <slot />
       </main>
