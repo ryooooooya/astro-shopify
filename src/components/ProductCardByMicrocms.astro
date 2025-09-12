@@ -9,8 +9,9 @@ import Money from "./Money.svelte";
 export interface Props {
   product: z.infer<typeof ProductResult>;
   className?: string;
+  noSeries?: boolean;
 }
-const { product,className } = Astro.props as Props;
+const { product,className,noSeries } = Astro.props as Props;
 
 const headers = Astro.request.headers;
 const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
@@ -41,9 +42,11 @@ const productShopify = await getProductByHandle({ handle: product?.id || "", buy
           {product?.designers && product?.designers[1]?.nameJa.length > 0 && ("他")}
         </span>
       </p>
-      <p>
-        {product?.series[0].title}
-      </p>
+      {noSeries ? null : (
+        <p>
+          {product?.series[0].title}
+        </p>
+      )}
     </div>
   </div>
 </a>
