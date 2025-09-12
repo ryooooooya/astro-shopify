@@ -124,3 +124,49 @@ export async function removeCartItems(lineIds: string[]) {
     }
   }
 }
+
+// src/stores/cart.ts に追加する関数
+
+import { updateCartLines } from "../utils/shopify"; // この関数も utils/shopify.ts に追加する必要があります
+
+// Cart line の数量を更新する関数
+export async function updateCartItem(lineId: string, quantity: number) {
+  const localCart = cart.get();
+  const cartId = localCart?.id;
+
+  if (!cartId) {
+    console.error('Cart ID not found');
+    return false;
+  }
+
+  if (quantity <= 0) {
+    console.error('Quantity must be greater than 0');
+    return false;
+  }
+
+  isCartUpdating.set(true);
+
+  try {
+    const cartData = await updateCartLines(cartId, lineId, quantity);
+
+    if (cartData) {
+      cart.set({
+        ...cart.get(),
+        id: cartData.id,
+        cost: cartData.cost,
+        checkoutUrl: cartData.checkoutUrl,
+        totalQuantity: cartData.totalQuantity,
+        lines: cartData.lines,
+      });
+      return true;
+    } else {
+      console.error('Failed to update cart item');
+      return false;
+    }
+  } catch (error) {
+    console.error('Cart update failed:', error);
+    return false;
+  } finally {
+    isCartUpdating.set(false);
+  }
+}

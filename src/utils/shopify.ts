@@ -181,3 +181,101 @@ export const getCart = async (id: string) => {
 
   return parsedCart;
 };
+
+
+// src/utils/shopify.ts に追加する関数
+
+export async function updateCartLines(cartId: string, lineId: string, quantity: number) {
+  const query = `
+    mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+      cartLinesUpdate(cartId: $cartId, lines: $lines) {
+        cart {
+          id
+          checkoutUrl
+          totalQuantity
+          lines(first: 100) {
+            nodes {
+              id
+              quantity
+              cost {
+                amountPerQuantity {
+                  amount
+                  currencyCode
+                }
+                subtotalAmount {
+                  amount
+                  currencyCode
+                }
+                totalAmount {
+                  amount
+                  currencyCode
+                }
+              }
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  product {
+                    id
+                    title
+                    handle
+                  }
+                  image {
+                    url
+                    altText
+                  }
+                }
+              }
+            }
+          }
+          cost {
+            subtotalAmount {
+              amount
+              currencyCode
+            }
+            totalAmount {
+              amount
+              currencyCode
+            }
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    cartId,
+    lines: [
+      {
+        id: lineId,
+        quantity: quantity
+      }
+    ]
+  };
+
+  try {
+    const response = await shopifyFetch({ query, variables });
+    const data = await response.json();
+
+    if (data.errors) {
+      console.error('GraphQL errors:', data.errors);
+      return null;
+    }
+
+    const cartLinesUpdate = data.data?.cartLinesUpdate;
+
+    if (cartLinesUpdate?.userErrors?.length > 0) {
+      console.error('User errors:', cartLinesUpdate.userErrors);
+      return null;
+    }
+
+    return cartLinesUpdate?.cart;
+  } catch (error) {
+    console.error('Update cart lines error:', error);
+    return null;
+  }
+}
