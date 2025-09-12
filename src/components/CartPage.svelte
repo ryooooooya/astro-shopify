@@ -1,6 +1,6 @@
 <!-- src/components/CartPage.svelte -->
 <script>
-  import { cart, removeCartItems } from '../stores/cart.ts';
+  import { cart, removeCartItems, updateCartItem, isCartUpdating } from '../stores/cart.ts';
   import { onMount } from 'svelte';
   
   let cartData = {};
@@ -11,27 +11,42 @@
 
   // nanostoresのカートストアから状態を取得
   onMount(() => {
-    const unsubscribe = cart.subscribe(value => {
+    const unsubscribeCart = cart.subscribe(value => {
       console.log('Cart value:', value);
-      cartData = value;
-      cartItems = value.lines?.nodes || [];
-      totalPrice = parseFloat(value.cost?.subtotalAmount?.amount || '0');
-      checkoutUrl = value.checkoutUrl || '';
+      
+      cartData = value || {};
+      cartItems = value?.lines?.nodes || [];
+      
+      // 価格を正しく取得（文字列として返されるため）
+      const subtotalAmount = value?.cost?.subtotalAmount?.amount;
+      totalPrice = subtotalAmount ? parseFloat(subtotalAmount) : 0;
+      
+      console.log('Subtotal amount (string):', subtotalAmount);
+      console.log('Parsed total price:', totalPrice);
+      
+      checkoutUrl = value?.checkoutUrl || '';
       isLoading = false;
     });
     
-    return unsubscribe;
+    return unsubscribeCart;
   });
 
-  // 商品数量を更新する関数（現在は削除のみ対応）
+  // 商品数量を更新する関数
   async function updateQuantity(lineId, quantity) {
     if (quantity <= 0) {
       await removeItem(lineId);
       return;
     }
     
-    // 数量更新機能は後で実装
-    console.log(`数量更新: ${lineId} -> ${quantity}`);
+    try {
+      const success = await updateCartItem(lineId, quantity);
+      if (!success) {
+        console.error('数量更新に失敗しました');
+        // 必要に応じてユーザーにエラーメッセージを表示
+      }
+    } catch (error) {
+      console.error('数量更新エラー:', error);
+    }
   }
 
   // 商品を削除する関数
@@ -52,16 +67,31 @@
     }
   }
 
-  // 価格をフォーマットする関数
+  // 価格をフォーマットする関数（文字列の価格に対応）
   function formatPrice(amount) {
+    // 文字列として渡される価格を数値に変換
+    const numericAmount = typeof amount === 'string' ? parseFloat(amount) : (amount || 0);
+    if (isNaN(numericAmount)) {
+      return '¥0';
+    }
     return new Intl.NumberFormat('ja-JP', {
       style: 'currency',
       currency: 'JPY'
-    }).format(amount);
+    }).format(numericAmount);
   }
 </script>
 
 <div class="cart-page">
+  <!-- 更新中の表示 -->
+  {#if $isCartUpdating}
+    <div class="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+      <div class="flex items-center space-x-2">
+        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+        <span>カートを更新中...</span>
+      </div>
+    </div>
+  {/if}
+
   {#if isLoading}
     <div class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
@@ -112,22 +142,35 @@
                   <p class="text-sm text-gray-600">{line.merchandise.title}</p>
                 {/if}
                 <p class="text-lg font-medium text-gray-900 mt-2">
-                  {#if line.merchandise?.price?.amount}
-                    {formatPrice(line.merchandise.price.amount)}
-                  {:else if line.merchandise?.price}
-                    {formatPrice(line.merchandise.price)}
-                  {:else}
-                    価格情報なし
-                  {/if}
+                  {formatPrice(line.cost?.amountPerQuantity?.amount || '0')}
                 </p>
               </div>
               
-              <!-- 数量表示（更新機能は一時的に無効化） -->
+              <!-- 数量調整 -->
               <div class="flex items-center space-x-3">
-                <span class="text-gray-600">数量:</span>
-                <span class="w-12 text-center font-medium bg-gray-100 px-2 py-1 rounded">
-                  {line.quantity}
-                </span>
+                <button
+                  on:click={() => updateQuantity(line.id, line.quantity - 1)}
+                  class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="数量を減らす"
+                  disabled={line.quantity <= 1 || $isCartUpdating}
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                  </svg>
+                </button>
+                
+                <span class="w-12 text-center font-medium">{line.quantity}</span>
+                
+                <button
+                  on:click={() => updateQuantity(line.id, line.quantity + 1)}
+                  class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="数量を増やす"
+                  disabled={$isCartUpdating}
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                </button>
               </div>
               
               <!-- 削除ボタン -->

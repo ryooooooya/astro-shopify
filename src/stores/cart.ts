@@ -125,9 +125,9 @@ export async function removeCartItems(lineIds: string[]) {
   }
 }
 
-// src/stores/cart.ts に追加する関数
 
-import { updateCartLines } from "../utils/shopify"; // この関数も utils/shopify.ts に追加する必要があります
+// カートページ実装
+import { updateCartLines } from "../utils/shopify"; // 追加のインポート
 
 // Cart line の数量を更新する関数
 export async function updateCartItem(lineId: string, quantity: number) {
@@ -170,3 +170,4 @@ export async function updateCartItem(lineId: string, quantity: number) {
     isCartUpdating.set(false);
   }
 }
+
