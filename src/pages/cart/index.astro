@@ -5,11 +5,8 @@ import CartPage from '../../components/CartPage.svelte';
 ---
 
 <BaseLayout title="カート" currentPage="cart">
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">ショッピングカート</h1>
-    <div id="cart-content">
-      <CartPage client:load />
-    </div>
+  <div class="w-full min-h-full" id="cart-content">
+    <CartPage client:load />
   </div>
 </BaseLayout>
 
@@ -19,8 +16,8 @@ import CartPage from '../../components/CartPage.svelte';
     // モーダル用のスタイルを削除し、ページ用に調整
     const cartContent = document.getElementById('cart-content');
     if (cartContent) {
-      cartContent.classList.remove('fixed', 'inset-0', 'z-50');
-      cartContent.classList.add('w-full', 'max-w-4xl', 'mx-auto');
+      cartContent.classList.remove();
+      cartContent.classList.add();
     }
   });
 </script>

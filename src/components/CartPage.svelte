@@ -1,4 +1,3 @@
-<!-- src/components/CartPage.svelte -->
 <script>
   import { cart, removeCartItems, updateCartItem, isCartUpdating } from '../stores/cart.ts';
   import { onMount } from 'svelte';
@@ -81,7 +80,7 @@
   }
 </script>
 
-<div class="cart-page">
+<div class="w-full">
   <!-- 更新中の表示 -->
   {#if $isCartUpdating}
     <div class="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
@@ -92,37 +91,38 @@
     </div>
   {/if}
 
+  <!-- ローディング -->
   {#if isLoading}
     <div class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
     </div>
+  <!-- 空のカート -->
   {:else if cartItems.length === 0}
-    <!-- 空のカート -->
-    <div class="text-center py-12">
-      <svg class="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m.6 0L6 5H3M7 13L5.4 5M7 13l-2.293 2.293c-.188.188-.293.442-.293.707v.586c0 1.105.895 2 2h11M17 13v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
-      </svg>
-      <h2 class="text-2xl font-semibold text-gray-700 mb-2">カートは空です</h2>
-      <p class="text-gray-500 mb-6">商品を追加してショッピングを始めましょう</p>
-      <a href="/" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+    <div class="">
+      <h1 class="text-2xl my-[2px]">カートは空です</h1>
+      <a
+        href="/"
+        class="block w-full py-1 text-blue-600 mt-8 hover:text-blue-700 transition-colors underline hover:no-underline underline-offset-6"
+      >
         ショッピングを続ける
       </a>
     </div>
+  <!-- カートに商品がある場合 -->
   {:else}
-    <!-- カート商品リスト -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- 商品リスト -->
-      <div class="lg:col-span-2">
-        <div class="bg-white rounded-lg shadow-sm border">
+    <div class="grid grid-cols-5 gap-10">
+      <!-- 左：商品リスト -->
+      <div class="col-span-3">
+        <h1 class="text-2xl my-[2px]">カート</h1>
+        <div class="mt-9 flex flex-col gap-y-4">
           {#each cartItems as line (line.id)}
-            <div class="flex items-center p-6 border-b border-gray-200 last:border-b-0">
+            <div class="flex items-center">
               <!-- 商品画像 -->
               <div class="flex-shrink-0 w-24 h-24">
                 {#if line.merchandise?.image?.url}
                   <img
                     src={line.merchandise.image.url}
                     alt={line.merchandise.image.altText || line.merchandise.product.title}
-                    class="w-full h-full object-cover rounded-lg"
+                    class="w-full h-full object-cover"
                   />
                 {:else}
                   <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
@@ -132,10 +132,9 @@
                   </div>
                 {/if}
               </div>
-              
               <!-- 商品情報 -->
               <div class="flex-1 ml-6">
-                <h3 class="text-lg font-semibold text-gray-900">
+                <h3 class="text-lg">
                   {line.merchandise?.product?.title || 'Unknown Product'}
                 </h3>
                 {#if line.merchandise?.title && line.merchandise.title !== 'Default Title'}
@@ -145,12 +144,11 @@
                   {formatPrice(line.cost?.amountPerQuantity?.amount || '0')}
                 </p>
               </div>
-              
               <!-- 数量調整 -->
               <div class="flex items-center space-x-3">
                 <button
                   on:click={() => updateQuantity(line.id, line.quantity - 1)}
-                  class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors disabled:text-gray-300 disabled:cursor-not-allowed hover:cursor-pointer"
                   aria-label="数量を減らす"
                   disabled={line.quantity <= 1 || $isCartUpdating}
                 >
@@ -158,12 +156,10 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                   </svg>
                 </button>
-                
-                <span class="w-12 text-center font-medium">{line.quantity}</span>
-                
+                <span class="w-8 text-center font-medium">{line.quantity}</span>
                 <button
                   on:click={() => updateQuantity(line.id, line.quantity + 1)}
-                  class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors disabled:text-gray-300 disabled:cursor-not-allowed hover:cursor-pointer"
                   aria-label="数量を増やす"
                   disabled={$isCartUpdating}
                 >
@@ -172,11 +168,10 @@
                   </svg>
                 </button>
               </div>
-              
               <!-- 削除ボタン -->
               <button
                 on:click={() => removeItem(line.id)}
-                class="ml-4 text-red-500 hover:text-red-700 transition-colors"
+                class="w-8 h-8 rounded-full flex items-center justify-center ml-4 bg-gray-100 text-red-500 hover:text-red-700 transition-colors hover:cursor-pointer hover:bg-gray-200"
                 aria-label="商品を削除"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,42 +182,40 @@
           {/each}
         </div>
       </div>
-      
-      <!-- 注文サマリー -->
-      <div class="lg:col-span-1">
-        <div class="bg-white rounded-lg shadow-sm border p-6 sticky top-6">
-          <h2 class="text-xl font-semibold mb-6">注文サマリー</h2>
-          
-          <div class="space-y-3 mb-6">
-            <div class="flex justify-between text-sm">
+      <!-- 右：注文サマリー -->
+      <div class="col-span-2">
+        <div class="px-10 sticky top-6">
+          <h2 class="text-2xl">注文内容</h2>
+          <div class="mt-9 flex flex-col gap-y-2">
+            <div class="flex justify-between">
               <span>小計</span>
               <span>{formatPrice(totalPrice)}</span>
             </div>
-            <div class="flex justify-between text-sm">
+            <div class="flex justify-between">
               <span>送料</span>
               <span>配送先住所入力後に計算</span>
             </div>
             <hr class="my-4">
-            <div class="flex justify-between font-semibold text-lg">
+            <div class="flex justify-between text-3xl">
               <span>合計</span>
               <span>{formatPrice(totalPrice)}</span>
             </div>
-          </div>
-          
-          <button
-            on:click={proceedToCheckout}
-            class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            disabled={cartItems.length === 0}
-          >
-            チェックアウトに進む
-          </button>
-          
-          <a
-            href="/"
-            class="block w-full text-center text-blue-600 py-3 mt-3 hover:text-blue-700 transition-colors"
-          >
-            ショッピングを続ける
-          </a>
+            <div class="pt-4">
+              <button
+                on:click={proceedToCheckout}
+                class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer"
+                disabled={cartItems.length === 0}
+              >
+                お会計に進む
+              </button>
+            </div>
+            <a
+              href="/"
+              class="block w-full py-1 text-blue-600 mt-8 hover:text-blue-700 transition-colors underline hover:no-underline underline-offset-6"
+            >
+              ショッピングを続ける
+            </a>
+          </div>  
         </div>
       </div>
     </div>
