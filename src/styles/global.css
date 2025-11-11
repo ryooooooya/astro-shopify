@@ -4,13 +4,16 @@
 @theme {
   --color-gray-500: #737373;
   --color-gray-300: #999999;
-  --font-size-3xl: 2.5rem 1 -0.02em;
-  --font-size-2xl: 1.5rem 1;
-  --font-size-xl: 1.25rem 1.4;
-  --font-size-lg: 1.125rem 133.333;
-  --font-size-md: 1rem 1.5;
-  --font-size-sm: 0.875rem 171.429;
-  --font-size-xs: 0.8rem 1;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 1;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.6;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.714;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 2.334;
 }
 
 @layer base {
@@ -39,10 +42,13 @@
   .button {
     @apply flex items-center justify-center;
     @apply bg-black;
-    @apply px-8 py-3 text-sm text-white;
+    @apply px-8 h-10 text-sm text-white;
     @apply transition hover:opacity-80;
     @apply focus:ring-2 focus:ring-black focus:ring-offset-1 focus:outline-none;
     @apply disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .text-underline {
+    @apply underline underline-offset-6 decoration-1;
   }
 }
 

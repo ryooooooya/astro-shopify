@@ -42,8 +42,8 @@ const productsListCat = productInfomation.categories.map((category) => (
   ) : (
     // 取得できたとき
     <BaseLayout title={product.title}>
-      <section class="">
-        <div class="grid grid-cols-2 gap-10">
+      <section class="pt-20 pb-8">
+        <div class="grid grid-cols-2 gap-12">
           <div class="">
             <ProductImageGallery images={product.images} />
           </div>
@@ -51,11 +51,11 @@ const productsListCat = productInfomation.categories.map((category) => (
             <h1 class="text-2xl">
               {productInfomation.name}
             </h1>
-            <p class="mt-4 text-lg">
-              <Money price={product?.variants.nodes[0].price} />
-              <span class="text-xs"> （税込）</span>
+            <p class="mt-6 text-[28px] leading-6">
+              <Money price={product?.variants.nodes[0].price} size="lg" />
+              <span class="text-base"> （税込）</span>
             </p>
-            <div class="max-w-[200px] mt-4">
+            <div class="max-w-[200px] mt-5">
               <AddToCartForm
                 client:load
                 variantId={firstVariant?.id}
@@ -63,53 +63,47 @@ const productsListCat = productInfomation.categories.map((category) => (
                 variantAvailableForSale={firstVariant?.availableForSale}
               />
             </div>
-            <dl class="grid grid-cols-[auto_1fr] gap-4 mt-10 ">
-              <dd class="text-gray-500">
-                Designer
+            <dl class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-5 mt-12">
+              <dd class="text-xs -mt-1 text-right">
+                Designer:
               </dd>
-              <dt>
+              <dt class="text-xl text-underline hover:no-underline">
                 {productInfomation.designers.map((designer) => (
                   <a href={`/designers/${designer.id}`}>{designer.nameJa}</a>
                 ))}
               </dt>
-              <dd class="text-gray-500">
-                Size
+              <dd class="text-xs -mt-1 text-right">
+                Size:
               </dd>
-              <dt>
+              <dt class="text-xl text-underline hover:no-underline">
                 {productInfomation.size}
               </dt>
-              <dd class="text-gray-500">
-                Series
+              <dd class="text-xs -mt-1 text-right">
+                Series:
               </dd>
-              <dt>
+              <dt class="text-xl text-underline hover:no-underline">
                 {productInfomation.series.map((series) => (
                   <a href={`/series/${series.id}`}>{series.title}</a>
                 ))}
               </dt>
-            </dl>
-            <dl class="grid grid-cols-[auto_1fr] gap-4 mt-10 ">
-              <dd class="text-gray-500">
-                Concept
+              {productInfomation.text && (
+                <>
+                  {productInfomation.text.map((contents) => (
+                    <>
+                      <dd class="text-xs -mt-1 text-right">
+                        {contents.title}:
+                      </dd>
+                      <dt class="text-xl">
+                        <div set:html={contents.description} />
+                      </dt>
+                    </>
+                  ))}
+                </>
+              )}
+              <dd class="text-xs -mt-1 text-right">
+                Notes:
               </dd>
-              <dt>
-                <div set:html={productInfomation.concept} />
-              </dt>
-              <dd class="text-gray-500">
-                Material
-              </dd>
-              <dt>
-                <div set:html={productInfomation.material} />
-              </dt>
-              <dd class="text-gray-500">
-                Design
-              </dd>
-              <dt>
-                <div set:html={productInfomation.design} />
-              </dt>
-              <dd class="text-gray-500">
-                Notes
-              </dd>
-              <dt>
+              <dt class="text-xl text-underline hover:no-underline">
                 {productInfomation.link.map((note) =>(
                   <a href={note.url} target="_blank" rel="noopener noreferrer">{note.text}</a>
                 ))}
@@ -190,6 +184,11 @@ const productsListCat = productInfomation.categories.map((category) => (
           </section>
         )
       ))}
+      <div class="mt-20">
+        <a href="/" class="text-underline text-2xl hover:no-underline">
+          Back
+        </a>
+      </div>
     </BaseLayout>
   )
 }

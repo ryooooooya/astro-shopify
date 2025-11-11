@@ -18,15 +18,23 @@ setCache.short(Astro);
 ---
 
 <BaseLayout title={title} currentPage="about">
-  <div class="grid grid-cols-10 gap-10 items-end h-full">
-    <div class="col-span-4 col-start-2">
+  <div class="grid grid-cols-10 gap-x-12 w-full pt-6">
+    <div class="col-span-7">
+      <img src="/img/about-img.webp" alt="" class="w-full object-cover"/>
+    </div>
+    <div class="mt-12 col-span-5">
       <h1 class="text-3xl">
         SomeRoom
       </h1>
       <p class="mt-4 text-xl">
         SomeRoomはブランディング・広告・ウェブ・映像など、ビジュアルコミュニケーションを中心に、さまざまな領域でクライアントワークを行っているデザイナーが制作を行う作業部屋です。コロナ禍を経てひょんなことから始まった仕事場のシェアをきっかけに、制作物の販売などのイベントにグループで参加しています。
       </p>
-      <dl class="grid grid-cols-[auto_1fr] gap-x-3 mt-4 text-xl">
+    </div>
+    <div class="mt-12 col-span-5">
+      <h2 class="text-xs mt-6">
+        Activities:
+      </h2>
+      <dl class="grid grid-cols-[auto_1fr] gap-x-3 text-xl">
         <dd>
           2025.05
         </dd>
@@ -58,9 +66,6 @@ setCache.short(Astro);
           Featured Projects
         </dt>
       </dl>
-    </div>
-    <div class="col-span-5 h-full">
-      <img src="/img/about-img.webp" alt="" class="w-full h-full object-cover"/>
     </div>
   </div>
 </BaseLayout>

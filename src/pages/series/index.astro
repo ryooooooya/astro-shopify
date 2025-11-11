@@ -14,30 +14,34 @@ const products = await getProducts({
 ---
 
 <BaseLayout title={title} currentPage="series">
-  <div class="h-full">
-    {series.contents.map((content: any) => (
-      <div class="grid grid-cols-5 gap-x-10 gap-y-16 mb-20">
-        <div class="">
-          <h3 class="text-2xl">{content.title}</h3>
-          <p class="mt-4 text-sm">
-            {content.text}
-          </p>
-          <a href={`/series/${content.id}`} class="block underline underline-offset-6 mt-4 text-sm hover:no-underline">
-            すべて見る
+  <section class="h-full pt-10 pb-12">
+    <h2 class="text-xs">
+      All series:
+    </h2>
+    <div class="flex flex-col gap-y-16 mt-3">
+      {series.contents.map((content: any) => (
+        <div class="grid grid-cols-5 gap-12">
+          <a href={`/series/${content.id}`} class="">
+            <h3 class="text-xl text-underline hover:no-underline">
+              {content.title}
+            </h3>
+            <p class="mt-2 text-base line-clamp-5">
+              {content.text}
+            </p>
           </a>
+          <>
+            {products.contents.map((product: any) => (
+              <>
+                {product.series.map((ser: any) => (
+                  ser.id === content.id && (
+                    <ProductCardByMicrocms product={product} className="c" noSeries/>
+                  )
+                ))}
+              </>
+            ))}
+          </>
         </div>
-        <>
-          {products.contents.map((product: any) => (
-            <>
-              {product.series.map((ser: any) => (
-                ser.id === content.id && (
-                  <ProductCardByMicrocms product={product} className="c" noSeries/>
-                )
-              ))}
-            </>
-          ))}
-        </>
-      </div>
-    ))}
-  </div>
+      ))}
+    </div>
+  </section>
 </BaseLayout>

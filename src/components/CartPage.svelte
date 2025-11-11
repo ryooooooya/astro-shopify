@@ -74,16 +74,17 @@
       return '¥0';
     }
     return new Intl.NumberFormat('ja-JP', {
-      style: 'currency',
+      // style: 'currency',
       currency: 'JPY'
     }).format(numericAmount);
   }
 </script>
 
-<div class="w-full">
+<div class="w-full pt-10 pb-12">
+
   <!-- 更新中の表示 -->
   {#if $isCartUpdating}
-    <div class="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+    <div class="fixed top-4 right-4 bg-black text-white px-4 py-2 shadow-lg z-50">
       <div class="flex items-center space-x-2">
         <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
         <span>カートを更新中...</span>
@@ -96,17 +97,19 @@
     <div class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
     </div>
+
   <!-- 空のカート -->
   {:else if cartItems.length === 0}
     <div class="">
       <h1 class="text-2xl my-[2px]">カートは空です</h1>
       <a
         href="/"
-        class="block w-full py-1 text-blue-600 mt-8 hover:text-blue-700 transition-colors underline hover:no-underline underline-offset-6"
+        class="block w-full py-1 text-black text-underline mt-8 hover:no-underline transition-colors"
       >
         ショッピングを続ける
       </a>
     </div>
+
   <!-- カートに商品がある場合 -->
   {:else}
     <div class="grid grid-cols-5 gap-10">
@@ -125,7 +128,7 @@
                     class="w-full h-full object-cover"
                   />
                 {:else}
-                  <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                  <div class="w-full h-full bg-gray-200 flex items-center justify-center">
                     <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
@@ -141,6 +144,7 @@
                   <p class="text-sm text-gray-600">{line.merchandise.title}</p>
                 {/if}
                 <p class="text-lg font-medium text-gray-900 mt-2">
+                  <span class="text-sm">¥</span>
                   {formatPrice(line.cost?.amountPerQuantity?.amount || '0')}
                 </p>
               </div>
@@ -148,7 +152,7 @@
               <div class="flex items-center space-x-3">
                 <button
                   on:click={() => updateQuantity(line.id, line.quantity - 1)}
-                  class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors disabled:text-gray-300 disabled:cursor-not-allowed hover:cursor-pointer"
+                  class="w-8 h-8 rounded-full text-white bg-black flex items-center justify-center hover:text-gray-500 transition-colors disabled:text-gray-700 disabled:cursor-not-allowed hover:cursor-pointer"
                   aria-label="数量を減らす"
                   disabled={line.quantity <= 1 || $isCartUpdating}
                 >
@@ -159,7 +163,7 @@
                 <span class="w-8 text-center font-medium">{line.quantity}</span>
                 <button
                   on:click={() => updateQuantity(line.id, line.quantity + 1)}
-                  class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors disabled:text-gray-300 disabled:cursor-not-allowed hover:cursor-pointer"
+                  class="w-8 h-8 rounded-full text-white bg-black flex items-center justify-center hover:text-gray-500 transition-colors disabled:text-gray-700 disabled:cursor-not-allowed hover:cursor-pointer"
                   aria-label="数量を増やす"
                   disabled={$isCartUpdating}
                 >
@@ -171,7 +175,7 @@
               <!-- 削除ボタン -->
               <button
                 on:click={() => removeItem(line.id)}
-                class="w-8 h-8 rounded-full flex items-center justify-center ml-4 bg-gray-100 text-red-500 hover:text-red-700 transition-colors hover:cursor-pointer hover:bg-gray-200"
+                class="w-8 h-8 rounded-full flex items-center justify-center ml-4 text-white bg-black hover:text-gray-500 transition-colors hover:cursor-pointer"
                 aria-label="商品を削除"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,21 +193,27 @@
           <div class="mt-9 flex flex-col gap-y-2">
             <div class="flex justify-between">
               <span>小計</span>
-              <span>{formatPrice(totalPrice)}</span>
+              <span>
+                <span class="text-sm">¥</span>
+                <span>{formatPrice(totalPrice)}</span>
+              </span>
             </div>
             <div class="flex justify-between">
               <span>送料</span>
               <span>配送先住所入力後に計算</span>
             </div>
-            <hr class="my-4">
+            <hr class="my-8">
             <div class="flex justify-between text-3xl">
               <span>合計</span>
-              <span>{formatPrice(totalPrice)}</span>
+              <span>
+                <span class="text-2xl">¥</span>
+                <span>{formatPrice(totalPrice)}</span>
+              </span>
             </div>
             <div class="pt-4">
               <button
                 on:click={proceedToCheckout}
-                class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer"
+                class="w-full bg-black text-white py-3 px-4 hover:text-gray-500 transition-colors font-medium cursor-pointer"
                 disabled={cartItems.length === 0}
               >
                 お会計に進む
@@ -211,7 +221,7 @@
             </div>
             <a
               href="/"
-              class="block w-full py-1 text-blue-600 mt-8 hover:text-blue-700 transition-colors underline hover:no-underline underline-offset-6"
+              class="block w-full py-1 text-black text-underline mt-8 hover:no-underline transition-colors"
             >
               ショッピングを続ける
             </a>

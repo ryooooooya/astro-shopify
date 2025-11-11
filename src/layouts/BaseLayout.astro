@@ -23,7 +23,7 @@ const categories = await getCategories({
 const { title, description = defaultDesc, currentPage } = Astro.props as Props;
 ---
 
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -34,12 +34,13 @@ const { title, description = defaultDesc, currentPage } = Astro.props as Props;
     <style is:global>
       @import "../styles/global.css";
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   </head>
   <body>
     <CartDrawer client:idle />
-    <div class="min-h-screen px-10 grid grid-cols-12 gap-x-10 py-8">
-      <Navigation className="col-span-2" currentPage={currentPage} categories={categories.contents} />
-      <main class="col-span-10 pb-20">
+    <div class="min-h-screen px-12 grid grid-cols-13 gap-x-12">
+      <Navigation className="col-span-3 fixed" currentPage={currentPage} categories={categories.contents} />
+      <main class="col-start-4 col-span-10 pb-12">
         <slot />
       </main>
     </div>

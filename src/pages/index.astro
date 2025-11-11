@@ -18,7 +18,12 @@ setCache.short(Astro);
 ---
 
 <BaseLayout title={title}>
-  <div class="grid grid-cols-5 gap-10 h-full">
-    {products.map((product) => <ProductCard product={product} />)}
-  </div>
+  <section class="h-full pt-10 pb-12">
+    <h2 class="text-xs">
+      All products:
+    </h2>
+    <div class="grid grid-cols-5 gap-12 mt-3">
+      {products.map((product) => <ProductCard product={product} />)}
+    </div>
+  </section>
 </BaseLayout>

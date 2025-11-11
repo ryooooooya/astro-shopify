@@ -44,9 +44,10 @@ export type Products = {
   designers: Designers[];
   series: Series[];
   categories: Categories[];
-  concept: string;
-  material: string;
-  design: string;
+  text: {
+    title: string;
+    description: string;
+  }[];
   link: {
     url: string;
     text: string;
