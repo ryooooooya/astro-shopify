@@ -18,5 +18,17 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      // Inline stylesheets smaller than 4kb to reduce render-blocking
+      assetsInlineLimit: 4096,
+      cssCodeSplit: true,
+      // Minify CSS for better compression
+      cssMinify: 'lightningcss',
+    },
+  },
+
+  build: {
+    // Inline stylesheets for better performance
+    inlineStylesheets: 'auto',
   },
 });
