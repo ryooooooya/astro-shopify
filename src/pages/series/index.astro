@@ -8,18 +8,29 @@ import ProductListXScrollWrap from "../../components/ProductListXScrollWrap.astr
 
 const title = "Astro + Shopify";
 
-const series = await getSeries({
-  limit: 100
-});
-const products = await getProducts({
-  limit: 4
-});
-
-// Fetch Shopify products in bulk
 const headers = Astro.request.headers;
 const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
-const handles = products.contents.map((p: any) => p.id);
-const shopifyProductsMap = await getProductsByHandles({ handles, buyerIP: ip });
+
+// Fetch series and all products in parallel for better performance
+const [series, allProducts] = await Promise.all([
+  getSeries({ limit: 100 }),
+  getProducts({ limit: 100 })
+]);
+
+// Group products by series for efficient lookup
+const productsBySeries = new Map();
+allProducts.contents.forEach((product: any) => {
+  product.series?.forEach((ser: any) => {
+    if (!productsBySeries.has(ser.id)) {
+      productsBySeries.set(ser.id, []);
+    }
+    productsBySeries.get(ser.id).push(product);
+  });
+});
+
+// Fetch Shopify products in bulk for all products
+const allHandles = allProducts.contents.map((p: any) => p.id);
+const shopifyProductsMap = await getProductsByHandles({ handles: allHandles, buyerIP: ip });
 
 // Apply static cache for series list page
 setCache.static(Astro);
@@ -31,34 +42,31 @@ setCache.static(Astro);
       All series:
     </h2>
     <div class="flex flex-col gap-y-16 mt-3 max-md:gap-y-12 max-sm:gap-y-8">
-      {series.contents.map((content: any) => (
-        <ProductListXScrollWrap>
-          <a href={`/series/${content.id}`} class="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]">
-            <h3 class="text-xl text-underline hover:no-underline whitespace-normal">
-              {content.title}
-            </h3>
-            <p class="mt-2 text-base line-clamp-5 whitespace-normal">
-              {content.text}
-            </p>
-          </a>
-          <>
-            {products.contents.map((product: any) => (
-              <>
-                {product.series.map((ser: any) => (
-                  ser.id === content.id && (
-                    <ProductCardByMicrocms
-                      product={product}
-                      productShopify={shopifyProductsMap.get(product.id)}
-                      className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"
-                      noSeries
-                    />
-                  )
-                ))}
-              </>
-            ))}
-          </>
-        </ProductListXScrollWrap>
-      ))}
+      {series.contents.map((content: any) => {
+        const seriesProducts = productsBySeries.get(content.id) || [];
+        return (
+          <ProductListXScrollWrap>
+            <a href={`/series/${content.id}`} class="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]">
+              <h3 class="text-xl text-underline hover:no-underline whitespace-normal">
+                {content.title}
+              </h3>
+              <p class="mt-2 text-base line-clamp-5 whitespace-normal">
+                {content.text}
+              </p>
+            </a>
+            <>
+              {seriesProducts.slice(0, 10).map((product: any) => (
+                <ProductCardByMicrocms
+                  product={product}
+                  productShopify={shopifyProductsMap.get(product.id)}
+                  className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"
+                  noSeries
+                />
+              ))}
+            </>
+          </ProductListXScrollWrap>
+        );
+      })}
     </div>
   </section>
 </BaseLayout>
