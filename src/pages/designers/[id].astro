@@ -1,0 +1,89 @@
+---
+import { getSeries, getDesignerDetail, getDesigners, getProducts } from "../../utils/microcms";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProductCardByMicrocms from "../../components/ProductCardByMicrocms.astro";
+import ProductListXScrollWrap from "../../components/ProductListXScrollWrap.astro";
+
+export async function getStaticPaths() {
+  const response = await getDesigners({ fields: ["id"] });
+  return response.contents.map((content: any) => ({
+    params: {
+      id: content.id,
+    },
+  }));
+}
+
+const title = "Astro + Shopify";
+const { id } = Astro.params;
+const designer = await getDesignerDetail(id as string);
+
+const series = await getSeries({
+  filters: `designers[contains]${id}`,
+  limit: 100
+});
+const products = await getProducts({
+  filters: `designers[contains]${id}`,
+  limit: 100
+});
+---
+
+<BaseLayout title={title} currentPage="designers">
+  <section class="grid grid-cols-5 gap-10 pt-10 pb-12 max-xs:flex max-xs:flex-col-reverse max-xs:gap-8 max-sm:pt-16">
+    <div class="col-span-3">
+      <p class="text-xs">
+        Designer :
+      </p>
+      <h2 class="mt-3 text-2xl">
+        {designer.nameJa}
+      </h2>
+      <p class="mt-4 text-sm">
+        {designer.profile}
+      </p>
+      <div class="mt-2">
+        {designer.link.map((link: any) => (
+          <a href={`/designer/${link.url}`} class="block underline underline-offset-6 text-sm hover:no-underline">
+            {link.text}
+          </a>
+        ))}
+      </div>
+    </div>
+    <div class="max-md:col-span-2">
+      <img src={designer.image.url} alt={designer.nameJa} />
+    </div>
+  </section>
+  <section class="flex flex-col gap-y-16 mt-20 max-md:gap-y-12 max-sm:gap-y-8">
+    {series.contents.map((content: any) => (
+      <ProductListXScrollWrap>
+        <a href={`/series/${content.id}`} class="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]">
+          <h3 class="text-2xl text-underline hover:no-underline whitespace-normal">{content.title}</h3>
+          <p class="mt-4 text-sm line-clamp-5 whitespace-normal">
+            {content.text}
+          </p>
+        </a>
+        {products.contents.map((product: any) => (
+          <>
+            {product.series.map((ser: any) => (
+              ser.id === content.id && (
+                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
+              )
+            ))}
+          </>
+        ))}
+      </ProductListXScrollWrap>
+    ))}
+  </section>
+  <section class="mt-20">
+    <div class="">
+      <div class="mb-3">
+        <h3 class="text-xs">
+          All products :
+        </h3>
+      </div>
+      <div class="grid grid-cols-5 gap-x-10 max-lg:grid-cols-4 max-md:grid-cols-3 max-md:gap-8 max-sm:grid-cols-2 max-sm:gap-4">
+        {products.contents.map((product: any) => (
+          <ProductCardByMicrocms product={product} className=""/>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

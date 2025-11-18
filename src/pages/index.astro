@@ -1,17 +1,29 @@
 ---
+import { z } from "zod";
+import { ProductResult } from "../utils/schemas";
 import { getProducts } from "./../utils/shopify";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Products from "../components/Products.astro";
 import { setCache } from "../utils/cache";
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProductCard from "../components/ProductCard.astro";
+
+const ProductsResult = z.array(ProductResult);
 
 const title = "Astro + Shopify";
 const headers = Astro.request.headers;
 const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
-const products = await getProducts({ buyerIP: ip });
+const products: z.infer<typeof ProductsResult> = await getProducts({ buyerIP: ip });
 
 setCache.short(Astro);
 ---
 
 <BaseLayout title={title}>
-  <Products products={products} />
+  <section class="h-full pt-10 pb-12 max-sm:pt-16">
+    <h2 class="text-xs">
+      All products:
+    </h2>
+    <div class="grid grid-cols-5 gap-12 mt-3 max-lg:grid-cols-4 max-md:grid-cols-3 max-md:gap-8 max-sm:grid-cols-2 max-sm:gap-4">
+      {products.map((product) => <ProductCard product={product} />)}
+    </div>
+  </section>
 </BaseLayout>

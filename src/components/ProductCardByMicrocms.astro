@@ -1,0 +1,52 @@
+---
+import type { z } from "zod";
+import type { ProductResult } from "../utils/schemas";
+import { getProductByHandle } from "../utils/shopify";
+
+import ShopifyImage from "./ShopifyImage.svelte";
+import Money from "./Money.svelte";
+
+export interface Props {
+  product: z.infer<typeof ProductResult>;
+  className?: string;
+  noSeries?: boolean;
+}
+const { product,className,noSeries } = Astro.props as Props;
+
+const headers = Astro.request.headers;
+const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
+
+const productShopify = await getProductByHandle({ handle: product?.id || "", buyerIP: ip });
+---
+
+<a
+  href={`/products/${productShopify?.handle}`}
+  class={`${className}`}
+>
+  <div class="relative">
+    <ShopifyImage
+      classList=""
+      loading="eager"
+      image={productShopify?.featuredImage}
+    />
+  </div>
+  <div class="">
+    <p class="mt-1 text-xl">{productShopify?.title}</p>
+    <p class="text-[22px]">
+      <Money price={productShopify?.variants.nodes[0].price} />
+    </p>
+    <!-- <div class="flex justify-between mt-[2px] text-sm">
+      <p>
+        {product?.designers[0].nameJa}
+        <span>
+          {product?.designers && product?.designers[1]?.nameJa.length > 0 && ("他")}
+        </span>
+      </p>
+      {noSeries ? null : (
+        <p>
+          {product?.series[0].title}
+        </p>
+      )}
+    </div> -->
+  </div>
+</a>

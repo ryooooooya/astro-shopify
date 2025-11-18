@@ -36,7 +36,7 @@
 
   <button
     type="submit"
-    class="button mt-10 w-full"
+    class="button text-sm"
     disabled={$isCartUpdating || noQuantityLeft || !variantAvailableForSale}
   >
     {#if $isCartUpdating}
@@ -62,9 +62,9 @@
       </svg>
     {/if}
     {#if variantAvailableForSale}
-      Add to bag
+      カートに入れる
     {:else}
-      Sold out
+      売り切れ
     {/if}
   </button>
   {#if noQuantityLeft}

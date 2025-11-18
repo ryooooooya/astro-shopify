@@ -1,21 +1,29 @@
 ---
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
+import { getCategories } from "../utils/microcms";
+
+import Navigation from "../components/Navigation.astro";
+// import Footer from "../components/Footer.astro";
 import CartDrawer from "../components/CartDrawer.svelte";
-import AnnouncementBar from "../components/AnnouncementBar.astro";
+
+import '@fontsource/red-hat-display';
+import '@fontsource/noto-sans-jp';
 
 export interface Props {
   title: string;
   description?: string;
+  currentPage?: string
 }
 
-const defaultDesc =
-  "A lightweight and minimalit Astro starter theme using Shopify with Svelte, Tailwind, and TypeScript.";
+const defaultDesc ="A lightweight and minimalit Astro starter theme using Shopify with Svelte, Tailwind, and TypeScript.";
 
-const { title, description = defaultDesc } = Astro.props as Props;
+const categories = await getCategories({
+  limit: 100
+});
+
+const { title, description = defaultDesc, currentPage } = Astro.props as Props;
 ---
 
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -26,14 +34,15 @@ const { title, description = defaultDesc } = Astro.props as Props;
     <style is:global>
       @import "../styles/global.css";
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   </head>
   <body>
-    <AnnouncementBar />
     <CartDrawer client:idle />
-    <Header />
-    <main>
-      <slot />
-    </main>
-    <Footer />
+    <div class="min-h-screen px-12 grid grid-cols-13 items-start gap-x-12 max-md:gap-x-6 max-sm:gap-x-4 max-lg:px-8 max-sm:px-6 max-xs:px-4">
+      <Navigation className="sticky top-0 col-span-3 max-sm:fixed max-sm:left-0 max-sm:w-full max-sm:px-6 max-xs:px-4" currentPage={currentPage} categories={categories.contents} />
+      <main class="col-start-4 col-span-10 pb-12 max-sm:col-start-1 max-sm:col-span-13">
+        <slot />
+      </main>
+    </div>
   </body>
 </html>

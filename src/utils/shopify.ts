@@ -71,7 +71,7 @@ export const getProducts = async (options: {
   limit?: number;
   buyerIP: string;
 }) => {
-  const { limit = 10, buyerIP } = options;
+  const { limit = 12, buyerIP } = options;
 
   const data = await makeShopifyRequest(
     ProductsQuery,
@@ -180,4 +180,38 @@ export const getCart = async (id: string) => {
   const parsedCart = CartResult.parse(cart);
 
   return parsedCart;
+};
+
+
+// カートページ実装
+import { UpdateCartLinesMutation } from "./graphql"; // この行をインポート部分に追加
+
+export const updateCartLines = async (cartId: string, lineId: string, quantity: number) => {
+  const variables = {
+    cartId,
+    lines: [
+      {
+        id: lineId,
+        quantity: quantity
+      }
+    ]
+  };
+
+  try {
+    const data = await makeShopifyRequest(UpdateCartLinesMutation, variables);
+    const { cartLinesUpdate } = data;
+
+    if (cartLinesUpdate?.userErrors?.length > 0) {
+      console.error('User errors:', cartLinesUpdate.userErrors);
+      return null;
+    }
+
+    const { cart } = cartLinesUpdate;
+    const parsedCart = CartResult.parse(cart);
+
+    return parsedCart;
+  } catch (error) {
+    console.error('Update cart lines error:', error);
+    return null;
+  }
 };

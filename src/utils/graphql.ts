@@ -166,3 +166,66 @@ export const RemoveCartLinesMutation = `#graphql
   }
   ${CART_FRAGMENT}
 `;
+
+
+// カートページ実装
+export const UpdateCartLinesMutation = `
+  mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+    cartLinesUpdate(cartId: $cartId, lines: $lines) {
+      cart {
+        id
+        checkoutUrl
+        totalQuantity
+        lines(first: 100) {
+          nodes {
+            id
+            quantity
+            cost {
+              amountPerQuantity {
+                amount
+                currencyCode
+              }
+              subtotalAmount {
+                amount
+                currencyCode
+              }
+              totalAmount {
+                amount
+                currencyCode
+              }
+            }
+            merchandise {
+              ... on ProductVariant {
+                id
+                title
+                product {
+                  id
+                  title
+                  handle
+                }
+                image {
+                  url
+                  altText
+                }
+              }
+            }
+          }
+        }
+        cost {
+          subtotalAmount {
+            amount
+            currencyCode
+          }
+          totalAmount {
+            amount
+            currencyCode
+          }
+        }
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;

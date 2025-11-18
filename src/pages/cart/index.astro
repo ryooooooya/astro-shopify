@@ -1,0 +1,23 @@
+---
+// src/pages/cart.astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CartPage from '../../components/CartPage.svelte';
+---
+
+<BaseLayout title="カート" currentPage="cart">
+  <div class="w-full min-h-full" id="cart-content">
+    <CartPage client:load />
+  </div>
+</BaseLayout>
+
+<script>
+  // カートページ用のスタイル調整
+  document.addEventListener('DOMContentLoaded', function() {
+    // モーダル用のスタイルを削除し、ページ用に調整
+    const cartContent = document.getElementById('cart-content');
+    if (cartContent) {
+      cartContent.classList.remove();
+      cartContent.classList.add();
+    }
+  });
+</script>

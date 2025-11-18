@@ -1,0 +1,97 @@
+---
+import { getSeries, getSeriesDetail, getProducts } from "../../utils/microcms";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProductCardByMicrocms from "../../components/ProductCardByMicrocms.astro";
+import ProductListXScrollWrap from "../../components/ProductListXScrollWrap.astro";
+
+export async function getStaticPaths() {
+  const response = await getSeries({ fields: ["id"] });
+  return response.contents.map((content: any) => ({
+    params: {
+      id: content.id,
+    },
+  }));
+}
+
+const title = "Astro + Shopify";
+const { id } = Astro.params;
+const series = await getSeriesDetail(id as string);
+
+const products = await getProducts({
+  filters: `series[contains]${id}`,
+  limit: 100
+});
+---
+
+<BaseLayout title={title} currentPage="series">
+  <section class="grid grid-cols-5 gap-10 items-end pt-10 pb-12 max-md:flex max-md:flex-col-reverse max-md:items-center max-md:pt-16">
+    <div class="col-span-3">
+      <h2>
+        <span class="block text-xs">
+          Series :
+        </span>
+        <span class="block mt-3 text-2xl">
+          {series.title}
+        </span>
+      </h2>
+      <p class="mt-4 text-sm">
+        {series.text}
+      </p>
+      <div class="mt-12">
+        <h2 class="text-xs">
+          Designer
+        </h2>
+        <div class="mt-3">
+          {series.designers.map((designer: any) => (
+            <a href={`/designers/${designer.id}`} class="inline-block text-2xl text-underline hover:no-underline">
+              {designer.nameJa}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+    <div class="col-span-2">
+      {series.coverImage && series.coverImage.url && (
+        <img src={series.coverImage.url} alt={series.title} class="w-full"/>
+      )}
+    </div>
+  </section>
+
+  {series.otherImage && series.otherImage.length > 0 && (
+    <section class="mt-20 -mr-12 max-lg:-mr-8 max-sm:-mr-6 max-xs:-mr-4">
+      <h2 class="text-xs">
+        Images :
+      </h2>
+      <div class="swiper">
+        <div class="swiper-wrapper">
+          {series.otherImage.map((image: any) => (
+            <div class="swiper-slide !w-auto">
+              <img src={image.url} class="max-h-[420px] max-sm:max-h-[320px] max-xs:max-h-[240px]"/>
+            </div>
+          ))}
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </section>
+  )}
+  </section>
+  <section class="mt-33">
+    <h2 class="text-xs">
+      All products :
+    </h2>
+    <ProductListXScrollWrap>
+        {products.contents.map((product: any) => (
+          <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px]"/>
+        ))}
+    </ProductListXScrollWrap>
+  </section>
+
+  <script>
+    import Swiper from 'swiper';
+    const swiper = new Swiper('.swiper', {
+      loop: true,
+      slidesPerView: "auto",
+      spaceBetween: 48,
+    });
+  </script>
+</BaseLayout>
