@@ -5,9 +5,6 @@ import Navigation from "../components/Navigation.astro";
 // import Footer from "../components/Footer.astro";
 import CartDrawer from "../components/CartDrawer.svelte";
 
-import '@fontsource/red-hat-display';
-import '@fontsource/noto-sans-jp';
-
 export interface Props {
   title: string;
   description?: string;
@@ -31,6 +28,25 @@ const { title, description = defaultDesc, currentPage } = Astro.props as Props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <!-- Preconnect to Google Fonts for faster font loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Load fonts asynchronously with display=swap to prevent render blocking -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
     <style is:global>
       @import "../styles/global.css";
     </style>
