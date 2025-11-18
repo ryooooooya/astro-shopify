@@ -19,14 +19,7 @@ const { images } = Astro.props as Props;
       classList="overflow-hidden rounded-lg h-full object-cover"
       loading="eager"
       image={images.nodes[0]}
-      sizes={`
-          (min-width: 1540px) 475px,
-          (min-width: 1280px) 389px,
-          (min-width: 1040px) 304px,
-          (min-width: 780px) 720px,
-          (min-width: 680px) 592px,
-          calc(94.44vw - 31px)
-        `}
+      sizes="(min-width: 1540px) 475px, (min-width: 1280px) 389px, (min-width: 1040px) 304px, (min-width: 780px) 720px, (min-width: 680px) 592px, calc(94.44vw - 31px)"
     />
   </div>
   <div
@@ -49,13 +42,9 @@ const { images } = Astro.props as Props;
             <div class="overflow-hidden rounded-lg">
               <ShopifyImage
                 classList=""
-                loading="eager"
+                loading="lazy"
                 image={image}
-                sizes={`
-                  (min-width: 1540px) 475px,
-                  (min-width: 1280px) 389px,
-                  304px
-                `}
+                sizes="(min-width: 1540px) 475px, (min-width: 1280px) 389px, 304px"
               />
             </div>
           );

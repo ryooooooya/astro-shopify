@@ -14,7 +14,7 @@ const headers = Astro.request.headers;
 const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
 const products: z.infer<typeof ProductsResult> = await getProducts({ buyerIP: ip });
 
-setCache.short(Astro);
+setCache.long(Astro);
 ---
 
 <BaseLayout title={title}>
