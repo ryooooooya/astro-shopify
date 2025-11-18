@@ -24,6 +24,8 @@ const firstVariant = product?.variants.nodes[0];
 setCache.short(Astro);
 
 import { getProductDetail, getProducts } from "../../utils/microcms";
+import { getProductsByHandles } from "./../../utils/shopify";
+
 const productInfomation = await getProductDetail(handle as string, {
   depth: 2
 });
@@ -47,6 +49,10 @@ const productsListCat = productInfomation.categories.map((category) => (
     product.categories.some((cat: any) => cat.id === category.id)
   )
 ));
+
+// Fetch all Shopify products in bulk
+const allProductHandles = products.contents.map((p: any) => p.id);
+const shopifyProductsMap = await getProductsByHandles({ handles: allProductHandles, buyerIP: ip });
 ---
 
 {
@@ -135,7 +141,11 @@ const productsListCat = productInfomation.categories.map((category) => (
             </p>
             <ProductListXScrollWrap>
               {productsListSeries[index].map((product: any) => (
-                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
+                <ProductCardByMicrocms
+                  product={product}
+                  productShopify={shopifyProductsMap.get(product.id)}
+                  className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"
+                />
               ))}
             </ProductListXScrollWrap>
           </section>
@@ -150,7 +160,11 @@ const productsListCat = productInfomation.categories.map((category) => (
             </p>
             <ProductListXScrollWrap>
               {productsListDesigner[index].map((product: any) => (
-                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
+                <ProductCardByMicrocms
+                  product={product}
+                  productShopify={shopifyProductsMap.get(product.id)}
+                  className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"
+                />
               ))}
             </ProductListXScrollWrap>
           </section>
@@ -165,7 +179,11 @@ const productsListCat = productInfomation.categories.map((category) => (
             </p>
             <ProductListXScrollWrap>
               {productsListCat[index].map((product: any) => (
-                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
+                <ProductCardByMicrocms
+                  product={product}
+                  productShopify={shopifyProductsMap.get(product.id)}
+                  className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"
+                />
               ))}
             </ProductListXScrollWrap>
           </section>
