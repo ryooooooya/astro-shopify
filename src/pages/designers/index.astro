@@ -1,11 +1,15 @@
 ---
 import { getDesigners } from "../../utils/microcms";
+import { setCache } from "../../utils/cache";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 const title = "Astro + Shopify";
 const designer = await getDesigners({
   limit: 100
 });
+
+// Apply static cache for designers list page
+setCache.static(Astro);
 ---
 
 <BaseLayout title={title} currentPage="designers">
@@ -14,24 +18,30 @@ const designer = await getDesigners({
       All designers:
     </h2>
     <div class="grid grid-cols-5 gap-12 mt-3 max-lg:grid-cols-4 max-md:grid-cols-3 max-md:gap-8 max-sm:grid-cols-2 max-sm:gap-4">
-      {designer.contents.map((content: any) => (
-        <a href={`/designers/${content.id}`} class="">
-          <div>
-            <img
-              src={`${content.image.url}?w=600&fm=webp`}
-              alt={content.nameJa}
-              class="w-full"
-              loading="lazy"
-              width={content.image.width}
-              height={content.image.height}
-            />
-          </div>
-          <h3 class="mt-3 text-xl">{content.nameJa}</h3>
-          <p class="mt-1 text-base line-clamp-4">
-            {content.profile}
-          </p>
-        </a>
-      ))}
+      {designer.contents.map((content: any, index: number) => {
+        // Prioritize loading for above-the-fold images
+        // Desktop (5 cols): first 10 items, Tablet (3-4 cols): first 6-8, Mobile (2 cols): first 4
+        const isAboveFold = index < 10;
+        return (
+          <a href={`/designers/${content.id}`} class="">
+            <div>
+              <img
+                src={`${content.image.url}?w=600&fm=webp`}
+                alt={content.nameJa}
+                class="w-full"
+                loading={isAboveFold ? "eager" : "lazy"}
+                fetchpriority={isAboveFold && index < 5 ? "high" : undefined}
+                width={content.image.width}
+                height={content.image.height}
+              />
+            </div>
+            <h3 class="mt-3 text-xl">{content.nameJa}</h3>
+            <p class="mt-1 text-base line-clamp-4">
+              {content.profile}
+            </p>
+          </a>
+        );
+      })}
     </div>
   </section>
 </BaseLayout>
