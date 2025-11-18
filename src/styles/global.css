@@ -27,16 +27,7 @@
 }
 
 @layer base {
-  html {
-    @apply scroll-smooth;
-    background: #FAFAFA;
-  }
-  body {
-    @apply min-h-screen;
-    font-family: 'Red Hat Display', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
-    font-feature-settings: 'palt' on;
-    letter-spacing: -0.02em;
-  }
+  /* html and body styles are inlined in BaseLayout.astro for faster rendering */
   /* accordion */
   /* details > summary {
     list-style: none;
