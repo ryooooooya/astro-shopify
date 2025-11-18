@@ -34,7 +34,7 @@ const { title, description = defaultDesc, currentPage } = Astro.props as Props;
     <style is:global>
       @import "../styles/global.css";
     </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <slot name="head" />
   </head>
   <body>
     <CartDrawer client:idle />

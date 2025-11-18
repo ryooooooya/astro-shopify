@@ -31,6 +31,9 @@ const shopifyProductsMap = await getProductsByHandles({ handles, buyerIP: ip });
 ---
 
 <BaseLayout title={title} currentPage="series">
+  <Fragment slot="head">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  </Fragment>
   <section class="grid grid-cols-5 gap-10 items-end pt-10 pb-12 max-md:flex max-md:flex-col-reverse max-md:items-center max-md:pt-16">
     <div class="col-span-3">
       <h2>
