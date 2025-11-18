@@ -1,9 +1,8 @@
 ---
 import { getSeries, getDesignerDetail, getDesigners, getProducts } from "../../utils/microcms";
-
 import BaseLayout from "../../layouts/BaseLayout.astro";
-
 import ProductCardByMicrocms from "../../components/ProductCardByMicrocms.astro";
+import ProductListXScrollWrap from "../../components/ProductListXScrollWrap.astro";
 
 export async function getStaticPaths() {
   const response = await getDesigners({ fields: ["id"] });
@@ -29,7 +28,7 @@ const products = await getProducts({
 ---
 
 <BaseLayout title={title} currentPage="designers">
-  <section class="grid grid-cols-5 gap-10 pt-10 pb-12">
+  <section class="grid grid-cols-5 gap-10 pt-10 pb-12 max-xs:flex max-xs:flex-col-reverse max-xs:gap-8 max-sm:pt-16">
     <div class="col-span-3">
       <p class="text-xs">
         Designer :
@@ -48,16 +47,16 @@ const products = await getProducts({
         ))}
       </div>
     </div>
-    <div class="">
+    <div class="max-md:col-span-2">
       <img src={designer.image.url} alt={designer.nameJa} />
     </div>
   </section>
-  <section class="mt-20 flex flex-col gap-y-20">
+  <section class="flex flex-col gap-y-16 mt-20 max-md:gap-y-12 max-sm:gap-y-8">
     {series.contents.map((content: any) => (
-      <div class="grid grid-cols-5 gap-10">
-        <a href={`/series/${content.id}`} >
-          <h3 class="text-2xl text-underline hover:no-underline">{content.title}</h3>
-          <p class="mt-4 text-sm line-clamp-5">
+      <ProductListXScrollWrap>
+        <a href={`/series/${content.id}`} class="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]">
+          <h3 class="text-2xl text-underline hover:no-underline whitespace-normal">{content.title}</h3>
+          <p class="mt-4 text-sm line-clamp-5 whitespace-normal">
             {content.text}
           </p>
         </a>
@@ -65,22 +64,26 @@ const products = await getProducts({
           <>
             {product.series.map((ser: any) => (
               ser.id === content.id && (
-                <ProductCardByMicrocms product={product} className=""/>
+                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
               )
             ))}
           </>
         ))}
-      </div>
+      </ProductListXScrollWrap>
     ))}
   </section>
-  <div class="grid grid-cols-5 gap-x-10 mt-33">
-    <div class="col-span-5 mb-3">
-      <h3 class="text-xs">
-        All products :
-      </h3>
+  <section class="mt-20">
+    <div class="">
+      <div class="mb-3">
+        <h3 class="text-xs">
+          All products :
+        </h3>
+      </div>
+      <div class="grid grid-cols-5 gap-x-10 max-lg:grid-cols-4 max-md:grid-cols-3 max-md:gap-8 max-sm:grid-cols-2 max-sm:gap-4">
+        {products.contents.map((product: any) => (
+          <ProductCardByMicrocms product={product} className=""/>
+        ))}
+      </div>
     </div>
-    {products.contents.map((product: any) => (
-      <ProductCardByMicrocms product={product} className=""/>
-    ))}
-  </div>
+  </section>
 </BaseLayout>

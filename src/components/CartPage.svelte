@@ -114,11 +114,11 @@
   {:else}
     <div class="grid grid-cols-5 gap-10">
       <!-- 左：商品リスト -->
-      <div class="col-span-3">
+      <div class="col-span-3 max-lg:col-span-5">
         <h1 class="text-2xl my-[2px]">カート</h1>
         <div class="mt-9 flex flex-col gap-y-4">
           {#each cartItems as line (line.id)}
-            <div class="flex items-center">
+            <div class="flex items-center gap-x-6 max-sm:items-start">
               <!-- 商品画像 -->
               <div class="flex-shrink-0 w-24 h-24">
                 {#if line.merchandise?.image?.url}
@@ -135,60 +135,64 @@
                   </div>
                 {/if}
               </div>
-              <!-- 商品情報 -->
-              <div class="flex-1 ml-6">
-                <h3 class="text-lg">
-                  {line.merchandise?.product?.title || 'Unknown Product'}
-                </h3>
-                {#if line.merchandise?.title && line.merchandise.title !== 'Default Title'}
-                  <p class="text-sm text-gray-600">{line.merchandise.title}</p>
-                {/if}
-                <p class="text-lg font-medium text-gray-900 mt-2">
-                  <span class="text-sm">¥</span>
-                  {formatPrice(line.cost?.amountPerQuantity?.amount || '0')}
-                </p>
+              <div class="contents max-sm:flex max-sm:flex-col max-sm:gap-y-3">
+                <!-- 商品情報 -->
+                <div class="flex-1">
+                  <h3 class="text-lg">
+                    {line.merchandise?.product?.title || 'Unknown Product'}
+                  </h3>
+                  {#if line.merchandise?.title && line.merchandise.title !== 'Default Title'}
+                    <p class="text-sm text-gray-600">{line.merchandise.title}</p>
+                  {/if}
+                  <p class="text-lg font-medium text-gray-900 mt-2">
+                    <span class="text-sm">¥</span>
+                    {formatPrice(line.cost?.amountPerQuantity?.amount || '0')}
+                  </p>
+                </div>
+                <div class="flex gap-x-4">
+                  <!-- 数量調整 -->
+                  <div class="flex items-center space-x-3">
+                    <button
+                      on:click={() => updateQuantity(line.id, line.quantity - 1)}
+                      class="w-8 h-8 rounded-full text-white bg-black flex items-center justify-center hover:text-gray-500 transition-colors disabled:text-gray-700 disabled:cursor-not-allowed hover:cursor-pointer"
+                      aria-label="数量を減らす"
+                      disabled={line.quantity <= 1 || $isCartUpdating}
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                      </svg>
+                    </button>
+                    <span class="w-8 text-center font-medium">{line.quantity}</span>
+                    <button
+                      on:click={() => updateQuantity(line.id, line.quantity + 1)}
+                      class="w-8 h-8 rounded-full text-white bg-black flex items-center justify-center hover:text-gray-500 transition-colors disabled:text-gray-700 disabled:cursor-not-allowed hover:cursor-pointer"
+                      aria-label="数量を増やす"
+                      disabled={$isCartUpdating}
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <!-- 削除ボタン -->
+                  <button
+                    on:click={() => removeItem(line.id)}
+                    class="w-8 h-8 rounded-full flex items-center justify-center ml-4 text-white bg-black hover:text-gray-500 transition-colors hover:cursor-pointer"
+                    aria-label="商品を削除"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <!-- 数量調整 -->
-              <div class="flex items-center space-x-3">
-                <button
-                  on:click={() => updateQuantity(line.id, line.quantity - 1)}
-                  class="w-8 h-8 rounded-full text-white bg-black flex items-center justify-center hover:text-gray-500 transition-colors disabled:text-gray-700 disabled:cursor-not-allowed hover:cursor-pointer"
-                  aria-label="数量を減らす"
-                  disabled={line.quantity <= 1 || $isCartUpdating}
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                  </svg>
-                </button>
-                <span class="w-8 text-center font-medium">{line.quantity}</span>
-                <button
-                  on:click={() => updateQuantity(line.id, line.quantity + 1)}
-                  class="w-8 h-8 rounded-full text-white bg-black flex items-center justify-center hover:text-gray-500 transition-colors disabled:text-gray-700 disabled:cursor-not-allowed hover:cursor-pointer"
-                  aria-label="数量を増やす"
-                  disabled={$isCartUpdating}
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                  </svg>
-                </button>
-              </div>
-              <!-- 削除ボタン -->
-              <button
-                on:click={() => removeItem(line.id)}
-                class="w-8 h-8 rounded-full flex items-center justify-center ml-4 text-white bg-black hover:text-gray-500 transition-colors hover:cursor-pointer"
-                aria-label="商品を削除"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-              </button>
             </div>
           {/each}
         </div>
       </div>
       <!-- 右：注文サマリー -->
-      <div class="col-span-2">
-        <div class="px-10 sticky top-6">
+      <div class="col-span-2 max-lg:col-span-5">
+        <div class="px-10 sticky top-6 max-lg:px-0">
           <h2 class="text-2xl">注文内容</h2>
           <div class="mt-9 flex flex-col gap-y-2">
             <div class="flex justify-between">

@@ -9,6 +9,7 @@ import AddToCartForm from "../../components/AddToCartForm.svelte";
 import ProductImageGallery from "../../components/ProductImageGallery.astro";
 import ProductCardByMicrocms from "../../components/ProductCardByMicrocms.astro";
 import Money from "../../components/Money.svelte";
+import ProductListXScrollWrap from "../../components/ProductListXScrollWrap.astro";
 
 const { handle } = Astro.params;
 const headers = Astro.request.headers;
@@ -23,11 +24,24 @@ const firstVariant = product?.variants.nodes[0];
 setCache.short(Astro);
 
 import { getProductDetail, getProducts } from "../../utils/microcms";
-const productInfomation = await getProductDetail(handle as string);
+const productInfomation = await getProductDetail(handle as string, {
+  depth: 2
+});
 const products = await getProducts({
   filters: `id[not_equals]${productInfomation.id}`,
-  limit: 100
+  limit: 100,
+  depth: 2
 });
+const productsListSeries = productInfomation.series.map((series) => (
+  products.contents.filter((product: any) =>
+    product.series.some((ser: any) => ser.id === series.id)
+  )
+));
+const productsListDesigner = productInfomation.designers.map((designer) => (
+  products.contents.filter((product: any) =>
+    product.designers.some((creator: any) => creator.id === designer.id)
+  )
+));
 const productsListCat = productInfomation.categories.map((category) => (
   products.contents.filter((product: any) =>
     product.categories.some((cat: any) => cat.id === category.id)
@@ -43,7 +57,7 @@ const productsListCat = productInfomation.categories.map((category) => (
     // 取得できたとき
     <BaseLayout title={product.title}>
       <section class="pt-20 pb-8">
-        <div class="grid grid-cols-2 gap-12">
+        <div class="grid grid-cols-2 gap-12 max-xs:grid-cols-1">
           <div class="">
             <ProductImageGallery images={product.images} />
           </div>
@@ -55,7 +69,7 @@ const productsListCat = productInfomation.categories.map((category) => (
               <Money price={product?.variants.nodes[0].price} size="lg" />
               <span class="text-base"> （税込）</span>
             </p>
-            <div class="max-w-[200px] mt-5">
+            <div class="max-w-[200px] mt-5 max-xs:max-w-full">
               <AddToCartForm
                 client:load
                 variantId={firstVariant?.id}
@@ -112,75 +126,48 @@ const productsListCat = productInfomation.categories.map((category) => (
           </div>
         </div>
       </section>
-      {productInfomation.series.map((series) =>(
-        <section class="mt-24">
-          <p class="flex items-start gap-1">
-            <span class="text-xs">Series :</span>
-            <span class="text-2xl">{series.title}</span>
-          </p>
-          <div class="grid grid-cols-5 gap-10 mt-3">
-            {products.contents.map((product: any) => (
-              <>
-                {product.series.map((ser: any) => (
-                  ser.id === series.id && (
-                    <ProductCardByMicrocms product={product} className=""/>
-                  )
-                ))}
-              </>
-            ))}
-          </div>
-        </section>
+      {productInfomation.series && productInfomation.series.length > 0 && productInfomation.series.map((series: any, index: number) =>(
+        productsListSeries[index] && productsListSeries[index].length > 0 && (
+          <section class="mt-24">
+            <p class="flex items-start gap-1">
+              <span class="text-xs">Series :</span>
+              <span class="text-2xl">{series.title}</span>
+            </p>
+            <ProductListXScrollWrap>
+              {productsListSeries[index].map((product: any) => (
+                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
+              ))}
+            </ProductListXScrollWrap>
+          </section>
+        )
       ))}
-      {productInfomation.designers.map((designer) =>(
-        <section class="mt-24">
-          <p class="flex items-start gap-1">
-            <span class="text-xs">Designer :</span>
-            <span class="text-2xl">{designer.nameJa}</span>
-          </p>
-          <div class="grid grid-cols-5 gap-10 mt-3">
-            {products.contents.map((product: any) => (
-              <>
-                {product.designers.map((creator: any) => (
-                  creator.id === designer.id && (
-                    <ProductCardByMicrocms product={product} className=""/>
-                  )
-                ))}
-              </>
-            ))}
-          </div>
-        </section>
+      {productInfomation.designers && productInfomation.designers.length > 0 && productInfomation.designers.map((designer: any, index: number) =>(
+        productsListDesigner[index] && productsListDesigner[index].length > 0 && (
+          <section class="mt-24">
+            <p class="flex items-start gap-1">
+              <span class="text-xs">Designer :</span>
+              <span class="text-2xl">{designer.nameJa}</span>
+            </p>
+            <ProductListXScrollWrap>
+              {productsListDesigner[index].map((product: any) => (
+                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
+              ))}
+            </ProductListXScrollWrap>
+          </section>
+        )
       ))}
-      {/* {productInfomation.categories.map((category) =>(
-        <section class="mt-24">
-          <p class="flex items-start gap-1">
-            <span class="text-xs">Category :</span>
-            <span class="text-2xl">{category.name}</span>
-          </p>
-          <div class="grid grid-cols-5 gap-10 mt-3">
-            {products.contents.map((product: any) => (
-              <>
-                {product.categories.map((cat: any) => (
-                  cat.id === category.id && (
-                    <ProductCardByMicrocms product={product} className=""/>
-                  )
-                ))}
-              </iv>
-            ))}
-          </div>
-        </section>
-      ))} */}
-      {productsListCat.map((productsCat) => (
-        productsCat.length > 0 && (
+      {productInfomation.categories && productInfomation.categories.length > 0 && productInfomation.categories.map((category: any, index: number) => (
+        productsListCat[index] && productsListCat[index].length > 0 && (
           <section class="mt-24">
             <p class="flex items-start gap-1">
               <span class="text-xs">Category :</span>
-              <span class="text-2xl">{productsCat[0].categories.find((cat: any) => cat.id)!.name}</span>
+              <span class="text-2xl">{category.name}</span>
             </p>
-            <div class="grid grid-cols-5 gap-10 mt-3">
-              {productsCat.map((product: any) => (
-                <ProductCardByMicrocms product={product} className=""/>
+            <ProductListXScrollWrap>
+              {productsListCat[index].map((product: any) => (
+                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
               ))}
-            </div>
+            </ProductListXScrollWrap>
           </section>
         )
       ))}

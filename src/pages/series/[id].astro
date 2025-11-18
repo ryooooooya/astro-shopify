@@ -2,6 +2,7 @@
 import { getSeries, getSeriesDetail, getProducts } from "../../utils/microcms";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProductCardByMicrocms from "../../components/ProductCardByMicrocms.astro";
+import ProductListXScrollWrap from "../../components/ProductListXScrollWrap.astro";
 
 export async function getStaticPaths() {
   const response = await getSeries({ fields: ["id"] });
@@ -23,7 +24,7 @@ const products = await getProducts({
 ---
 
 <BaseLayout title={title} currentPage="series">
-  <section class="grid grid-cols-5 gap-10 items-end pt-10 pb-12">
+  <section class="grid grid-cols-5 gap-10 items-end pt-10 pb-12 max-md:flex max-md:flex-col-reverse max-md:items-center max-md:pt-16">
     <div class="col-span-3">
       <h2>
         <span class="block text-xs">
@@ -57,7 +58,7 @@ const products = await getProducts({
   </section>
 
   {series.otherImage && series.otherImage.length > 0 && (
-    <section class="mt-20 -mr-12 max-h-[480px]">
+    <section class="mt-20 -mr-12 max-lg:-mr-8 max-sm:-mr-6 max-xs:-mr-4">
       <h2 class="text-xs">
         Images :
       </h2>
@@ -65,7 +66,7 @@ const products = await getProducts({
         <div class="swiper-wrapper">
           {series.otherImage.map((image: any) => (
             <div class="swiper-slide !w-auto">
-              <img src={image.url} class=""/>
+              <img src={image.url} class="max-h-[420px] max-sm:max-h-[320px] max-xs:max-h-[240px]"/>
             </div>
           ))}
         </div>
@@ -73,15 +74,16 @@ const products = await getProducts({
       </div>
     </section>
   )}
+  </section>
   <section class="mt-33">
     <h2 class="text-xs">
       All products :
     </h2>
-    <div class="grid grid-cols-5 gap-10 mt-3">
-      {products.contents.map((product: any) => (
-        <ProductCardByMicrocms product={product} className=""/>
-      ))}
-    </div>
+    <ProductListXScrollWrap>
+        {products.contents.map((product: any) => (
+          <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px]"/>
+        ))}
+    </ProductListXScrollWrap>
   </section>
 
   <script>

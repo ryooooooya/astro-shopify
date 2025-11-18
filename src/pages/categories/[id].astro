@@ -23,7 +23,7 @@ const products = await getProducts({
 ---
 
 <BaseLayout title={title} currentPage="product">
-  <section class="h-full pt-10 pb-12">
+  <section class="h-full pt-10 pb-12 max-sm:pt-16">
     <div class="relative flex items-start gap-x-[2px]">
       <h2 class="text-xs">
         Category:
@@ -35,7 +35,7 @@ const products = await getProducts({
         {products.contents.length ? `${products.contents.length}` : ''}
       </span>
     </div>
-    <div class="grid grid-cols-5 gap-12 mt-3">
+    <div class="grid grid-cols-5 gap-12 mt-3 max-lg:grid-cols-4 max-md:grid-cols-3 max-md:gap-8 max-sm:grid-cols-2 max-sm:gap-4">
       {products.contents.map((product: any) => (
         <ProductCardByMicrocms product={product} className=""/>
       ))}

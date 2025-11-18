@@ -1,7 +1,12 @@
 @import "tailwindcss";
 /* @import "kiso.css"; */
 
+*{
+  /* outline: 1px solid #f00; */
+}
+
 @theme {
+  --color-gray-100: #FAFAFA;
   --color-gray-500: #737373;
   --color-gray-300: #999999;
   --text-2xl: 1.5rem;
@@ -14,6 +19,11 @@
   --text-sm--line-height: 1.714;
   --text-xs: 0.75rem;
   --text-xs--line-height: 2.334;
+  --breakpoint-lg: 1240px;
+  --breakpoint-md: 1024px;
+  --breakpoint-sm: 768px;
+  --breakpoint-xs: 640px;
+  --breakpoint-2xs: 400px;
 }
 
 @layer base {
@@ -42,7 +52,7 @@
   .button {
     @apply flex items-center justify-center;
     @apply bg-black;
-    @apply px-8 h-10 text-sm text-white;
+    @apply px-8 w-full h-10 text-sm text-white;
     @apply transition hover:opacity-80;
     @apply focus:ring-2 focus:ring-black focus:ring-offset-1 focus:outline-none;
     @apply disabled:cursor-not-allowed disabled:opacity-60;

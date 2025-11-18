@@ -9,11 +9,11 @@ const designer = await getDesigners({
 ---
 
 <BaseLayout title={title} currentPage="designers">
-  <section class="h-full pt-10 pb-12">
+  <section class="h-full pt-10 pb-12 max-sm:pt-16">
     <h2 class="text-xs">
       All designers:
     </h2>
-    <div class="grid grid-cols-5 gap-12 mt-3">
+    <div class="grid grid-cols-5 gap-12 mt-3 max-lg:grid-cols-4 max-md:grid-cols-3 max-md:gap-8 max-sm:grid-cols-2 max-sm:gap-4">
       {designer.contents.map((content: any) => (
         <a href={`/designers/${content.id}`} class="">
           <div>

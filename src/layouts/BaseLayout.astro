@@ -38,9 +38,9 @@ const { title, description = defaultDesc, currentPage } = Astro.props as Props;
   </head>
   <body>
     <CartDrawer client:idle />
-    <div class="min-h-screen px-12 grid grid-cols-13 gap-x-12">
-      <Navigation className="col-span-3 fixed" currentPage={currentPage} categories={categories.contents} />
-      <main class="col-start-4 col-span-10 pb-12">
+    <div class="min-h-screen px-12 grid grid-cols-13 items-start gap-x-12 max-md:gap-x-6 max-sm:gap-x-4 max-lg:px-8 max-sm:px-6 max-xs:px-4">
+      <Navigation className="sticky top-0 col-span-3 max-sm:fixed max-sm:left-0 max-sm:w-full max-sm:px-6 max-xs:px-4" currentPage={currentPage} categories={categories.contents} />
+      <main class="col-start-4 col-span-10 pb-12 max-sm:col-start-1 max-sm:col-span-13">
         <slot />
       </main>
     </div>
