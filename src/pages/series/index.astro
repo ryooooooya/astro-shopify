@@ -1,6 +1,7 @@
 ---
 import { getSeries, getProducts } from "../../utils/microcms";
 import { getProductsByHandles } from "../../utils/shopify";
+import { setCache } from "../../utils/cache";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProductCardByMicrocms from "../../components/ProductCardByMicrocms.astro";
 import ProductListXScrollWrap from "../../components/ProductListXScrollWrap.astro";
@@ -19,6 +20,9 @@ const headers = Astro.request.headers;
 const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
 const handles = products.contents.map((p: any) => p.id);
 const shopifyProductsMap = await getProductsByHandles({ handles, buyerIP: ip });
+
+// Apply static cache for series list page
+setCache.static(Astro);
 ---
 
 <BaseLayout title={title} currentPage="series">

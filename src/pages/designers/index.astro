@@ -1,11 +1,15 @@
 ---
 import { getDesigners } from "../../utils/microcms";
+import { setCache } from "../../utils/cache";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 const title = "Astro + Shopify";
 const designer = await getDesigners({
   limit: 100
 });
+
+// Apply static cache for designers list page
+setCache.static(Astro);
 ---
 
 <BaseLayout title={title} currentPage="designers">
