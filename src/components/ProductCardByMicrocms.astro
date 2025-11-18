@@ -23,8 +23,9 @@ const { product, productShopify, className, noSeries } = Astro.props as Props;
     {productShopify?.featuredImage ? (
       <ShopifyImage
         classList=""
-        loading="eager"
+        loading="lazy"
         image={productShopify.featuredImage}
+        sizes="(min-width: 1280px) 200px, (min-width: 768px) 25vw, 50vw"
       />
     ) : (
       <div class="bg-gray-200 aspect-square" />

@@ -55,7 +55,13 @@ const shopifyProductsMap = await getProductsByHandles({ handles, buyerIP: ip });
       </div>
     </div>
     <div class="max-md:col-span-2">
-      <img src={designer.image.url} alt={designer.nameJa} />
+      <img
+        src={`${designer.image.url}?w=800&fm=webp`}
+        alt={designer.nameJa}
+        loading="lazy"
+        width={designer.image.width}
+        height={designer.image.height}
+      />
     </div>
   </section>
   <section class="flex flex-col gap-y-16 mt-20 max-md:gap-y-12 max-sm:gap-y-8">

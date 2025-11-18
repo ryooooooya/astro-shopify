@@ -59,7 +59,14 @@ const shopifyProductsMap = await getProductsByHandles({ handles, buyerIP: ip });
     </div>
     <div class="col-span-2">
       {series.coverImage && series.coverImage.url && (
-        <img src={series.coverImage.url} alt={series.title} class="w-full"/>
+        <img
+          src={`${series.coverImage.url}?w=800&fm=webp`}
+          alt={series.title}
+          class="w-full"
+          loading="lazy"
+          width={series.coverImage.width}
+          height={series.coverImage.height}
+        />
       )}
     </div>
   </section>
@@ -73,7 +80,14 @@ const shopifyProductsMap = await getProductsByHandles({ handles, buyerIP: ip });
         <div class="swiper-wrapper">
           {series.otherImage.map((image: any) => (
             <div class="swiper-slide !w-auto">
-              <img src={image.url} class="max-h-[420px] max-sm:max-h-[320px] max-xs:max-h-[240px]"/>
+              <img
+                src={`${image.url}?w=1200&fm=webp`}
+                class="max-h-[420px] max-sm:max-h-[320px] max-xs:max-h-[240px]"
+                loading="lazy"
+                width={image.width}
+                height={image.height}
+                alt=""
+              />
             </div>
           ))}
         </div>
