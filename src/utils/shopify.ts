@@ -110,6 +110,31 @@ export const getProductByHandle = async (options: {
   return parsedProduct;
 };
 
+// Get multiple products by handles - returns a Map for O(1) lookup
+export const getProductsByHandles = async (options: {
+  handles: string[];
+  buyerIP: string;
+}) => {
+  const { handles, buyerIP } = options;
+
+  // Fetch all products in parallel
+  const products = await Promise.all(
+    handles.map(handle =>
+      getProductByHandle({ handle, buyerIP }).catch(() => null)
+    )
+  );
+
+  // Create a Map for fast lookup by handle
+  const productMap = new Map();
+  products.forEach((product, index) => {
+    if (product) {
+      productMap.set(handles[index], product);
+    }
+  });
+
+  return productMap;
+};
+
 export const getProductRecommendations = async (options: {
   productId: string;
   buyerIP: string;

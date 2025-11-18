@@ -21,32 +21,76 @@ if (!product) {
 }
 
 const firstVariant = product?.variants.nodes[0];
-setCache.short(Astro);
+setCache.medium(Astro);
 
 import { getProductDetail, getProducts } from "../../utils/microcms";
+import { getProductsByHandles } from "./../../utils/shopify";
+
+// Get product information with depth 1 (only direct relations)
 const productInfomation = await getProductDetail(handle as string, {
-  depth: 2
+  depth: 1
 });
-const products = await getProducts({
-  filters: `id[not_equals]${productInfomation.id}`,
-  limit: 100,
-  depth: 2
-});
+
+// Build filters for related products
+const seriesIds = productInfomation.series.map((s) => s.id);
+const designerIds = productInfomation.designers.map((d) => d.id);
+const categoryIds = productInfomation.categories.map((c) => c.id);
+
+// Fetch related products with optimized queries (only what's needed for each section)
+const [seriesProducts, designerProducts, categoryProducts] = await Promise.all([
+  // Only fetch if there are series
+  seriesIds.length > 0
+    ? getProducts({
+        filters: `id[not_equals]${productInfomation.id}[and]series[contains]${seriesIds[0]}${seriesIds.slice(1).map(id => `[or]series[contains]${id}`).join('')}`,
+        limit: 20,
+        depth: 1
+      })
+    : Promise.resolve({ contents: [] }),
+  // Only fetch if there are designers
+  designerIds.length > 0
+    ? getProducts({
+        filters: `id[not_equals]${productInfomation.id}[and]designers[contains]${designerIds[0]}${designerIds.slice(1).map(id => `[or]designers[contains]${id}`).join('')}`,
+        limit: 20,
+        depth: 1
+      })
+    : Promise.resolve({ contents: [] }),
+  // Only fetch if there are categories
+  categoryIds.length > 0
+    ? getProducts({
+        filters: `id[not_equals]${productInfomation.id}[and]categories[contains]${categoryIds[0]}${categoryIds.slice(1).map(id => `[or]categories[contains]${id}`).join('')}`,
+        limit: 20,
+        depth: 1
+      })
+    : Promise.resolve({ contents: [] })
+]);
+
+// Map products to their respective categories
 const productsListSeries = productInfomation.series.map((series) => (
-  products.contents.filter((product: any) =>
+  seriesProducts.contents.filter((product: any) =>
     product.series.some((ser: any) => ser.id === series.id)
   )
 ));
 const productsListDesigner = productInfomation.designers.map((designer) => (
-  products.contents.filter((product: any) =>
+  designerProducts.contents.filter((product: any) =>
     product.designers.some((creator: any) => creator.id === designer.id)
   )
 ));
 const productsListCat = productInfomation.categories.map((category) => (
-  products.contents.filter((product: any) =>
+  categoryProducts.contents.filter((product: any) =>
     product.categories.some((cat: any) => cat.id === category.id)
   )
 ));
+
+// Collect all unique product IDs and fetch Shopify products in bulk
+const allProductIds = new Set([
+  ...seriesProducts.contents.map((p: any) => p.id),
+  ...designerProducts.contents.map((p: any) => p.id),
+  ...categoryProducts.contents.map((p: any) => p.id)
+]);
+const shopifyProductsMap = await getProductsByHandles({
+  handles: Array.from(allProductIds),
+  buyerIP: ip
+});
 ---
 
 {
@@ -135,7 +179,11 @@ const productsListCat = productInfomation.categories.map((category) => (
             </p>
             <ProductListXScrollWrap>
               {productsListSeries[index].map((product: any) => (
-                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
+                <ProductCardByMicrocms
+                  product={product}
+                  productShopify={shopifyProductsMap.get(product.id)}
+                  className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"
+                />
               ))}
             </ProductListXScrollWrap>
           </section>
@@ -150,7 +198,11 @@ const productsListCat = productInfomation.categories.map((category) => (
             </p>
             <ProductListXScrollWrap>
               {productsListDesigner[index].map((product: any) => (
-                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
+                <ProductCardByMicrocms
+                  product={product}
+                  productShopify={shopifyProductsMap.get(product.id)}
+                  className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"
+                />
               ))}
             </ProductListXScrollWrap>
           </section>
@@ -165,7 +217,11 @@ const productsListCat = productInfomation.categories.map((category) => (
             </p>
             <ProductListXScrollWrap>
               {productsListCat[index].map((product: any) => (
-                <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"/>
+                <ProductCardByMicrocms
+                  product={product}
+                  productShopify={shopifyProductsMap.get(product.id)}
+                  className="max-w-[200px] min-w-[163px] max-xs:min-w-[calc(50%-16px)]"
+                />
               ))}
             </ProductListXScrollWrap>
           </section>

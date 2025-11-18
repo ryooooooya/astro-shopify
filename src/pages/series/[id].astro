@@ -1,5 +1,6 @@
 ---
 import { getSeries, getSeriesDetail, getProducts } from "../../utils/microcms";
+import { getProductsByHandles } from "../../utils/shopify";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProductCardByMicrocms from "../../components/ProductCardByMicrocms.astro";
 import ProductListXScrollWrap from "../../components/ProductListXScrollWrap.astro";
@@ -21,6 +22,12 @@ const products = await getProducts({
   filters: `series[contains]${id}`,
   limit: 100
 });
+
+// Fetch Shopify products in bulk
+const headers = Astro.request.headers;
+const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
+const handles = products.contents.map((p: any) => p.id);
+const shopifyProductsMap = await getProductsByHandles({ handles, buyerIP: ip });
 ---
 
 <BaseLayout title={title} currentPage="series">
@@ -52,7 +59,14 @@ const products = await getProducts({
     </div>
     <div class="col-span-2">
       {series.coverImage && series.coverImage.url && (
-        <img src={series.coverImage.url} alt={series.title} class="w-full"/>
+        <img
+          src={`${series.coverImage.url}?w=800&fm=webp`}
+          alt={series.title}
+          class="w-full"
+          loading="lazy"
+          width={series.coverImage.width}
+          height={series.coverImage.height}
+        />
       )}
     </div>
   </section>
@@ -66,7 +80,14 @@ const products = await getProducts({
         <div class="swiper-wrapper">
           {series.otherImage.map((image: any) => (
             <div class="swiper-slide !w-auto">
-              <img src={image.url} class="max-h-[420px] max-sm:max-h-[320px] max-xs:max-h-[240px]"/>
+              <img
+                src={`${image.url}?w=1200&fm=webp`}
+                class="max-h-[420px] max-sm:max-h-[320px] max-xs:max-h-[240px]"
+                loading="lazy"
+                width={image.width}
+                height={image.height}
+                alt=""
+              />
             </div>
           ))}
         </div>
@@ -81,7 +102,11 @@ const products = await getProducts({
     </h2>
     <ProductListXScrollWrap>
         {products.contents.map((product: any) => (
-          <ProductCardByMicrocms product={product} className="max-w-[200px] min-w-[163px]"/>
+          <ProductCardByMicrocms
+            product={product}
+            productShopify={shopifyProductsMap.get(product.id)}
+            className="max-w-[200px] min-w-[163px]"
+          />
         ))}
     </ProductListXScrollWrap>
   </section>
