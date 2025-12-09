@@ -14,7 +14,7 @@ export interface Props {
   currentPage?: string
 }
 
-const defaultDesc ="A lightweight and minimalit Astro starter theme using Shopify with Svelte, Tailwind, and TypeScript.";
+const defaultDesc ="SomeRoomはさまざまな領域で活動するデザイナーが制作を行う作業部屋です。制作物の販売などのイベントにグループで参加しています。";
 
 const categories = await getCategories({
   limit: 100
@@ -31,6 +31,19 @@ const { title, description = defaultDesc, currentPage } = Astro.props as Props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <!-- OGP -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={new URL('/ogp.png', Astro.url).href} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL('/ogp.png', Astro.url).href} />
+
     <style is:global>
       @import "../styles/global.css";
     </style>

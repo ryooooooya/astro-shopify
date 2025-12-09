@@ -9,7 +9,7 @@ import ProductCard from "../components/ProductCard.astro";
 
 const ProductsResult = z.array(ProductResult);
 
-const title = "Astro + Shopify";
+const title = "SomeRoom";
 const headers = Astro.request.headers;
 const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
 const products: z.infer<typeof ProductsResult> = await getProducts({ buyerIP: ip });
